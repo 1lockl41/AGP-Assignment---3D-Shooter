@@ -44,21 +44,25 @@ void Camera::Rotate(float degrees)
 void Camera::Forward(float distance)
 {
 	m_moveBackForward += distance;
+	GetViewMatrix();
 }
 
 void Camera::Sideways(float distance)
 {
 	m_moveLeftRight += distance;
+	GetViewMatrix();
 }
 
 void Camera::Yaw(float degrees)
 {
 	m_dz += degrees;
+	GetViewMatrix();
 }
 
 void Camera::Pitch(float degrees)
 {
 	m_dx += degrees;
+	GetViewMatrix();
 }
 
 XMMATRIX Camera::GetViewMatrix()

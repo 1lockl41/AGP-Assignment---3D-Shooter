@@ -7,6 +7,7 @@
 #include "text2D.h"
 #include "Model.h"
 #include "scene_node.h"
+#include "InputManager.h"
 #include <dinput.h>
 
 int (WINAPIV * __vsnprintf_s)(char *, size_t, const char*, va_list) = _vsnprintf;
@@ -55,13 +56,14 @@ Model* model1;
 Model* model2;
 Model* camera_model;
 
-IDirectInput8* g_direct_input;
-IDirectInputDevice8* g_keyboard_device;
-unsigned char g_keyboard_keys_state[256];
-IDirectInputDevice8* g_mouse_device;
-DIMOUSESTATE mouseState;
-DIMOUSESTATE mouseStateLast;
-int m_screenWidth, m_screenHeight;
+//IDirectInput8* g_direct_input;
+//IDirectInputDevice8* g_keyboard_device;
+//unsigned char g_keyboard_keys_state[256];
+//IDirectInputDevice8* g_mouse_device;
+//DIMOUSESTATE mouseState;
+//DIMOUSESTATE mouseStateLast;
+//int m_screenWidth, m_screenHeight;
+InputManager* inputManager;
 
 Scene_node* g_root_node;
 Scene_node* g_node1;
@@ -100,7 +102,7 @@ void ShutdownD3D();
 void RenderFrame(void);
 
 HRESULT InitialiseGraphics(void);
-HRESULT InitialiseInput(void);
+//HRESULT InitialiseInput(void);
 
 /////////////////////////////////////////////////////////////////////
 //Entry point to the program. Initialises everything and goes into a
@@ -118,11 +120,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return 0;
 	}
 
-	if (FAILED(InitialiseInput()))
-	{
-		DXTRACE_MSG("Failed to initialise input");
-		return 0;
-	}
+	inputManager = new InputManager();
+
+	inputManager->InitialiseInput(g_hInst, g_hWnd);
 
 	if (FAILED(InitialiseD3D()))
 	{
@@ -342,8 +342,7 @@ HRESULT InitialiseD3D()
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
-	m_screenHeight = height;
-	m_screenWidth = width;
+	inputManager->SetScreenSize(width, height);
 
 	g_pImmediateContext->RSSetViewports(1, &viewport);
 
@@ -369,16 +368,16 @@ void ShutdownD3D()
 	if (g_pImmediateContext) g_pImmediateContext->Release();
 	if (g_pZBuffer) g_pZBuffer->Release();
 	if (g_pD3DDevice) g_pD3DDevice->Release();
-	if (g_keyboard_device)
-	{
-		g_keyboard_device->Unacquire();
-		g_keyboard_device->Release();
-	}
-	if (g_mouse_device)
-	{
-		g_mouse_device->Unacquire();
-		g_mouse_device->Release();
-	}
+	//if (g_keyboard_device)
+	//{
+	//	g_keyboard_device->Unacquire();
+	//	g_keyboard_device->Release();
+	//}
+	//if (g_mouse_device)
+	//{
+	//	g_mouse_device->Unacquire();
+	//	g_mouse_device->Release();
+	//}
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -597,82 +596,13 @@ HRESULT InitialiseGraphics()//03 - 01
 	return S_OK;
 }
 
-HRESULT InitialiseInput(void)
-{
-	HRESULT hr;
-	/////////KEYBOARD///////
-	ZeroMemory(g_keyboard_keys_state, sizeof(g_keyboard_keys_state));
-
-	hr = DirectInput8Create(g_hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&g_direct_input, NULL);
-	if (FAILED(hr)) return hr;
-
-	hr = g_direct_input->CreateDevice(GUID_SysKeyboard, &g_keyboard_device, NULL);
-	if (FAILED(hr)) return hr;
-
-	hr = g_keyboard_device->SetDataFormat(&c_dfDIKeyboard);
-	if (FAILED(hr)) return hr;
-
-	hr = g_keyboard_device->SetCooperativeLevel(g_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-	if (FAILED(hr)) return hr;
-
-	hr = g_keyboard_device->Acquire();
-	if (FAILED(hr)) return hr;
-	////////////////////////
-
-	//////////MOUSE/////////
-	hr = DirectInput8Create(g_hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&g_direct_input, NULL);
-	if (FAILED(hr)) return hr;
-
-	hr = g_direct_input->CreateDevice(GUID_SysMouse, &g_mouse_device, NULL);
-	if (FAILED(hr)) return hr;
-
-hr = g_mouse_device->SetDataFormat(&c_dfDIMouse);
-if (FAILED(hr)) return hr;
-
-hr = g_mouse_device->SetCooperativeLevel(g_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-if (FAILED(hr)) return hr;
-
-hr = g_mouse_device->Acquire();
-if (FAILED(hr)) return hr;
-//////////////////////////
-
-return S_OK;
-}
-
-bool IsKeyPressed(unsigned char DI_keycode)
-{
-	return g_keyboard_keys_state[DI_keycode] & 0x80;
-}
-
-void ReadInputStates()
-{
-	HRESULT hr;
-	hr = g_keyboard_device->GetDeviceState(sizeof(g_keyboard_keys_state), (LPVOID)&g_keyboard_keys_state);
-	if (FAILED(hr))
-	{
-		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
-		{
-			g_keyboard_device->Acquire();
-		}
-	}
-
-	hr = g_mouse_device->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&mouseState);
-	if (FAILED(hr))
-	{
-		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
-		{
-			g_mouse_device->Acquire();
-		}
-	}
-}
-
 /////////////////////////////////////////////////////////////////////////
 //Render Frame
 /////////////////////////////////////////////////////////////////////////
 void RenderFrame(void)
 {
-	ReadInputStates();
-	if (IsKeyPressed(DIK_ESCAPE)) DestroyWindow(g_hWnd);
+	inputManager->ReadInputStates();
+	if (inputManager->IsKeyPressed(DIK_ESCAPE)) DestroyWindow(g_hWnd);
 
 	//Clear the back buffer - choose a colour you like
 	float rgba_clear_colour[4] = { 0.1f, 0.2f,0.6f,1.0f };
@@ -697,32 +627,32 @@ void RenderFrame(void)
 	//if (IsKeyPressed(DIK_S)) g_node1->IncY(-0.0005f, g_root_node);
 
 
-	if (IsKeyPressed(DIK_DOWN))
+	if (inputManager->IsKeyPressed(DIK_DOWN))
 	{
 		camera1->Pitch(0.0002f);
 	}
-	if (IsKeyPressed(DIK_UP))
+	if (inputManager->IsKeyPressed(DIK_UP))
 	{
 		camera1->Pitch(-0.0002f);
 	}
-	if (IsKeyPressed(DIK_LEFT))
+	if (inputManager->IsKeyPressed(DIK_LEFT))
 	{
 		camera1->Yaw(-0.0002f);
 	}
-	if (IsKeyPressed(DIK_RIGHT))
+	if (inputManager->IsKeyPressed(DIK_RIGHT))
 	{
 		camera1->Yaw(0.0002f);
 	}
 
-	if ((mouseState.lX != mouseStateLast.lX) || (mouseState.lY != mouseStateLast.lY))
+	if ((inputManager->GetMouseState().lX != inputManager->GetLastMouseState().lX) || (inputManager->GetMouseState().lY != inputManager->GetLastMouseState().lY))
 	{
-		camera1->Yaw(mouseStateLast.lX * 0.001f);
-		camera1->Pitch(mouseStateLast.lY * 0.001f);
+		camera1->Yaw(inputManager->GetMouseState().lX * 0.001f);
+		camera1->Pitch(inputManager->GetMouseState().lY * 0.001f);
 
-		mouseStateLast = mouseState;
+		inputManager->SetLastMouseState(inputManager->GetMouseState());
 	}
 
-	if (IsKeyPressed(DIK_W))
+	if (inputManager->IsKeyPressed(DIK_W))
 	{
 		camera1->Forward(0.001f);
 
@@ -746,7 +676,7 @@ void RenderFrame(void)
 
 		}
 	}
-	if (IsKeyPressed(DIK_S))
+	if (inputManager->IsKeyPressed(DIK_S))
 	{
 		camera1->Forward(-0.001f);
 
@@ -769,7 +699,7 @@ void RenderFrame(void)
 			g_camera_node->SetZPos(camera1->GetZ());
 		}
 	}
-	if (IsKeyPressed(DIK_A))
+	if (inputManager->IsKeyPressed(DIK_A))
 	{
 		camera1->Sideways(-0.001f);
 
@@ -792,7 +722,7 @@ void RenderFrame(void)
 			g_camera_node->SetZPos(camera1->GetZ());
 		}
 	}
-	if (IsKeyPressed(DIK_D))
+	if (inputManager->IsKeyPressed(DIK_D))
 	{
 		camera1->Sideways(0.001f);
 
