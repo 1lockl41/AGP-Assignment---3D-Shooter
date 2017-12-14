@@ -40,10 +40,6 @@ ID3D11Buffer* g_pConstantBuffer0;
 
 ID3D11DepthStencilView* g_pZBuffer;
 
-float xRotation = 0;
-
-float zPosition = 10;
-
 Camera* camera1;
 
 ID3D11ShaderResourceView* g_pTexture0;
@@ -62,6 +58,10 @@ Model* camera_model;
 IDirectInput8* g_direct_input;
 IDirectInputDevice8* g_keyboard_device;
 unsigned char g_keyboard_keys_state[256];
+IDirectInputDevice8* g_mouse_device;
+DIMOUSESTATE mouseState;
+DIMOUSESTATE mouseStateLast;
+int m_screenWidth, m_screenHeight;
 
 Scene_node* g_root_node;
 Scene_node* g_node1;
@@ -209,14 +209,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_DESTROY:
 			PostQuitMessage(0);
 
-		case WM_LBUTTONDOWN:
-			zPosition -= 0.5f;
-			break;
-
-		case WM_RBUTTONDOWN:
-			zPosition += 0.5f;
-			break;
-
 		case WM_KEYDOWN:
 			if (wParam == VK_ESCAPE)
 				DestroyWindow(g_hWnd);
@@ -350,6 +342,9 @@ HRESULT InitialiseD3D()
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
+	m_screenHeight = height;
+	m_screenWidth = width;
+
 	g_pImmediateContext->RSSetViewports(1, &viewport);
 
 	g_2DText = new Text2D("Assets/font1.bmp", g_pD3DDevice, g_pImmediateContext);
@@ -378,6 +373,11 @@ void ShutdownD3D()
 	{
 		g_keyboard_device->Unacquire();
 		g_keyboard_device->Release();
+	}
+	if (g_mouse_device)
+	{
+		g_mouse_device->Unacquire();
+		g_mouse_device->Release();
 	}
 }
 
@@ -600,6 +600,7 @@ HRESULT InitialiseGraphics()//03 - 01
 HRESULT InitialiseInput(void)
 {
 	HRESULT hr;
+	/////////KEYBOARD///////
 	ZeroMemory(g_keyboard_keys_state, sizeof(g_keyboard_keys_state));
 
 	hr = DirectInput8Create(g_hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&g_direct_input, NULL);
@@ -616,8 +617,26 @@ HRESULT InitialiseInput(void)
 
 	hr = g_keyboard_device->Acquire();
 	if (FAILED(hr)) return hr;
+	////////////////////////
 
-	return S_OK;
+	//////////MOUSE/////////
+	hr = DirectInput8Create(g_hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&g_direct_input, NULL);
+	if (FAILED(hr)) return hr;
+
+	hr = g_direct_input->CreateDevice(GUID_SysMouse, &g_mouse_device, NULL);
+	if (FAILED(hr)) return hr;
+
+hr = g_mouse_device->SetDataFormat(&c_dfDIMouse);
+if (FAILED(hr)) return hr;
+
+hr = g_mouse_device->SetCooperativeLevel(g_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+if (FAILED(hr)) return hr;
+
+hr = g_mouse_device->Acquire();
+if (FAILED(hr)) return hr;
+//////////////////////////
+
+return S_OK;
 }
 
 bool IsKeyPressed(unsigned char DI_keycode)
@@ -634,6 +653,15 @@ void ReadInputStates()
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
 			g_keyboard_device->Acquire();
+		}
+	}
+
+	hr = g_mouse_device->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&mouseState);
+	if (FAILED(hr))
+	{
+		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
+		{
+			g_mouse_device->Acquire();
 		}
 	}
 }
@@ -668,17 +696,33 @@ void RenderFrame(void)
 	//if (IsKeyPressed(DIK_W)) g_node1->IncY(0.0005f, g_root_node);
 	//if (IsKeyPressed(DIK_S)) g_node1->IncY(-0.0005f, g_root_node);
 
-	if (IsKeyPressed(DIK_D))
-	{
-		camera1->Rotate(0.02);
-	}
 
-	if (IsKeyPressed(DIK_A))
+	if (IsKeyPressed(DIK_DOWN))
 	{
-		camera1->Rotate(-0.02);
+		camera1->Pitch(0.0002f);
 	}
-
 	if (IsKeyPressed(DIK_UP))
+	{
+		camera1->Pitch(-0.0002f);
+	}
+	if (IsKeyPressed(DIK_LEFT))
+	{
+		camera1->Yaw(-0.0002f);
+	}
+	if (IsKeyPressed(DIK_RIGHT))
+	{
+		camera1->Yaw(0.0002f);
+	}
+
+	if ((mouseState.lX != mouseStateLast.lX) || (mouseState.lY != mouseStateLast.lY))
+	{
+		camera1->Yaw(mouseStateLast.lX * 0.001f);
+		camera1->Pitch(mouseStateLast.lY * 0.001f);
+
+		mouseStateLast = mouseState;
+	}
+
+	if (IsKeyPressed(DIK_W))
 	{
 		camera1->Forward(0.001f);
 
@@ -702,7 +746,7 @@ void RenderFrame(void)
 
 		}
 	}
-	if (IsKeyPressed(DIK_DOWN))
+	if (IsKeyPressed(DIK_S))
 	{
 		camera1->Forward(-0.001f);
 
@@ -725,7 +769,7 @@ void RenderFrame(void)
 			g_camera_node->SetZPos(camera1->GetZ());
 		}
 	}
-	if (IsKeyPressed(DIK_LEFT))
+	if (IsKeyPressed(DIK_A))
 	{
 		camera1->Sideways(-0.001f);
 
@@ -748,7 +792,7 @@ void RenderFrame(void)
 			g_camera_node->SetZPos(camera1->GetZ());
 		}
 	}
-	if (IsKeyPressed(DIK_RIGHT))
+	if (IsKeyPressed(DIK_D))
 	{
 		camera1->Sideways(0.001f);
 

@@ -13,7 +13,7 @@ class Camera
 {
 public:
 	Camera(float x, float y, float z, float camera_rotation);
-	void Rotate(float degrees);
+	void Rotate(float xDegrees);
 	void Forward(float distance);
 	void Sideways(float distance);
 	XMMATRIX GetViewMatrix();
@@ -27,10 +27,18 @@ public:
 	void MoveX(float xSpeed);
 	void MoveY(float ySpeed);
 	void MoveZ(float zSpeed);
+	void Yaw(float degrees);
+	void Pitch(float degrees);
 
 private:
 	float m_x, m_y, m_z, m_dx, m_dz, m_camera_rotation;
 	XMVECTOR m_position, m_lookat, m_up;
 
-
+	XMVECTOR m_defaultForward;
+	XMMATRIX m_cameraRotationMatrix;
+	XMVECTOR m_defaultRight;
+	XMVECTOR m_cameraForward;
+	XMVECTOR m_cameraRight;
+	float m_moveLeftRight;
+	float m_moveBackForward;
 };

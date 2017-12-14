@@ -16,47 +16,79 @@ Camera::Camera(float x, float y, float z, float camera_rotation)
 	m_z = z;
 	m_camera_rotation = camera_rotation;
 
-	m_dx = sin(camera_rotation);
-	m_dz = cos(camera_rotation);
+	/*m_dx = sin(camera_rotation);
+	m_dz = cos(camera_rotation);*/
+
+	m_dx = 0.0f;
+	m_dz = 0.0f;
+
+	m_defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	m_defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+	m_cameraForward  = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	m_cameraRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+	m_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
+	m_moveLeftRight = 0.0f;
+	m_moveBackForward = 0.0f;
+	m_position = XMVectorSet(m_x, m_y, m_z, 0.0);
 }
 
 void Camera::Rotate(float degrees)
 {
-	m_camera_rotation += degrees;
+	/*m_camera_rotation += degrees;
 
 	m_dx = sin(m_camera_rotation * (XM_PI / 180));
-	m_dz = cos(m_camera_rotation * (XM_PI / 180));
+	m_dz = cos(m_camera_rotation * (XM_PI / 180));*/
+
 }
 
 void Camera::Forward(float distance)
 {
-	m_x += distance * m_dx;
-	m_z += distance * m_dz;
+	m_moveBackForward += distance;
 }
 
 void Camera::Sideways(float distance)
 {
-	/*XMVECTOR dir = XMVectorSet(m_x, 0.0, m_z,0.0);
-	XMVECTOR v1 = XMVectorSet(0.0, 1.0, 0.0, 0.0);
-	XMVECTOR v = XMVector3Cross(dir, v1);
-	m_x += XMVectorGetX(v) * distance;
-	m_z += XMVectorGetZ(v) * distance;*/
-	
-	GetViewMatrix();
+	m_moveLeftRight += distance;
+}
 
-	XMVECTOR forward = XMVector3Normalize(m_lookat - m_position);
-	XMVECTOR right = XMVector3Cross(forward, m_up);
+void Camera::Yaw(float degrees)
+{
+	m_dz += degrees;
+}
 
-	m_position -= (right * distance);
-	m_x = XMVectorGetX(m_position);
-	m_z = XMVectorGetZ(m_position);
+void Camera::Pitch(float degrees)
+{
+	m_dx += degrees;
 }
 
 XMMATRIX Camera::GetViewMatrix()
 {
-	m_position = XMVectorSet(m_x, m_y, m_z, 0.0);
-	m_lookat = XMVectorSet(m_x + m_dx, m_y, m_z + m_dz, 0.0);
-	m_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
+	//m_position = XMVectorSet(m_x, m_y, m_z, 0.0);
+	//m_lookat = XMVectorSet(m_x + m_dx, m_y, m_z + m_dz, 0.0);
+	//m_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
+
+	m_cameraRotationMatrix = XMMatrixRotationRollPitchYaw(m_dx, m_dz, 0);
+	m_lookat = XMVector3TransformCoord(m_defaultForward, m_cameraRotationMatrix);
+	m_lookat = XMVector3Normalize(m_lookat);
+
+	XMMATRIX RotateYTempMatrix;
+	RotateYTempMatrix = XMMatrixRotationY(m_dz);
+
+	m_cameraRight = XMVector3TransformCoord(m_defaultRight, RotateYTempMatrix);
+	m_up = XMVector3TransformCoord(m_up, RotateYTempMatrix);
+	m_cameraForward = XMVector3TransformCoord(m_defaultForward, RotateYTempMatrix);
+
+	m_position += m_moveLeftRight*m_cameraRight;
+	m_position += m_moveBackForward*m_cameraForward;
+
+	m_moveLeftRight = 0.0f;
+	m_moveBackForward = 0.0f;
+
+	m_lookat = m_position + m_lookat;
+
+	m_x = XMVectorGetX(m_position);
+	m_y = XMVectorGetY(m_position);
+	m_z = XMVectorGetZ(m_position);
 
 	return XMMatrixLookAtLH(m_position, m_lookat, m_up);
 }
