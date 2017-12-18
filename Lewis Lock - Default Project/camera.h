@@ -13,7 +13,6 @@ class Camera
 {
 public:
 	Camera(float x, float y, float z, float camera_rotation);
-	void Rotate(float xDegrees);
 	void Forward(float distance);
 	void Sideways(float distance);
 	XMMATRIX GetViewMatrix();
@@ -29,6 +28,9 @@ public:
 	void MoveZ(float zSpeed);
 	void Yaw(float degrees);
 	void Pitch(float degrees);
+
+	float GetRotationDX();
+	float GetRotationDZ();
 
 private:
 	float m_x, m_y, m_z, m_dx, m_dz, m_camera_rotation;

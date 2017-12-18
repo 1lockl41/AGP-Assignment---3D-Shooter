@@ -39,10 +39,10 @@ void player::RotateCamera(InputManager* inputManager)
 
 		inputManager->SetLastMouseState(inputManager->GetMouseState());
 	}
-	////////////////////////////////////////////
+	//////////////////////////////////////////////////
 }
 
-void player::MoveCamera(InputManager* inputManager, Scene_node* camera_node, Scene_node* root_node)
+void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 {
 
 	if (inputManager->IsKeyPressed(DIK_W))
@@ -50,22 +50,22 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* camera_node, Sce
 		getCamera()->Forward(0.001f);
 
 		// set camera node to the position of the camera
-		camera_node->SetXPos(getCamera()->GetX());
-		camera_node->SetYPos(getCamera()->GetY());
-		camera_node->SetZPos(getCamera()->GetZ());
+		m_sceneNode->SetXPos(getCamera()->GetX());
+		m_sceneNode->SetYPos(getCamera()->GetY());
+		m_sceneNode->SetZPos(getCamera()->GetZ());
 
 		XMMATRIX identity = XMMatrixIdentity();
 
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (camera_node->check_collision(root_node, camera_node) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Forward(-0.001f);
-			camera_node->SetXPos(getCamera()->GetX());
-			camera_node->SetYPos(getCamera()->GetY());
-			camera_node->SetZPos(getCamera()->GetZ());
+			m_sceneNode->SetXPos(getCamera()->GetX());
+			m_sceneNode->SetYPos(getCamera()->GetY());
+			m_sceneNode->SetZPos(getCamera()->GetZ());
 
 		}
 	}
@@ -74,22 +74,22 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* camera_node, Sce
 		getCamera()->Forward(-0.001f);
 
 		// set camera node to the position of the camera
-		camera_node->SetXPos(getCamera()->GetX());
-		camera_node->SetYPos(getCamera()->GetY());
-		camera_node->SetZPos(getCamera()->GetZ());
+		m_sceneNode->SetXPos(getCamera()->GetX());
+		m_sceneNode->SetYPos(getCamera()->GetY());
+		m_sceneNode->SetZPos(getCamera()->GetZ());
 
 		XMMATRIX identity = XMMatrixIdentity();
 
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (camera_node->check_collision(root_node, camera_node) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Forward(0.001f);
-			camera_node->SetXPos(getCamera()->GetX());
-			camera_node->SetYPos(getCamera()->GetY());
-			camera_node->SetZPos(getCamera()->GetZ());
+			m_sceneNode->SetXPos(getCamera()->GetX());
+			m_sceneNode->SetYPos(getCamera()->GetY());
+			m_sceneNode->SetZPos(getCamera()->GetZ());
 		}
 	}
 	if (inputManager->IsKeyPressed(DIK_A))
@@ -97,22 +97,22 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* camera_node, Sce
 		getCamera()->Sideways(-0.001f);
 
 		// set camera node to the position of the camera
-		camera_node->SetXPos(getCamera()->GetX());
-		camera_node->SetYPos(getCamera()->GetY());
-		camera_node->SetZPos(getCamera()->GetZ());
+		m_sceneNode->SetXPos(getCamera()->GetX());
+		m_sceneNode->SetYPos(getCamera()->GetY());
+		m_sceneNode->SetZPos(getCamera()->GetZ());
 
 		XMMATRIX identity = XMMatrixIdentity();
 
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (camera_node->check_collision(root_node, camera_node) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Sideways(0.001f);
-			camera_node->SetXPos(getCamera()->GetX());
-			camera_node->SetYPos(getCamera()->GetY());
-			camera_node->SetZPos(getCamera()->GetZ());
+			m_sceneNode->SetXPos(getCamera()->GetX());
+			m_sceneNode->SetYPos(getCamera()->GetY());
+			m_sceneNode->SetZPos(getCamera()->GetZ());
 		}
 	}
 	if (inputManager->IsKeyPressed(DIK_D))
@@ -120,22 +120,53 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* camera_node, Sce
 		getCamera()->Sideways(0.001f);
 
 		// set camera node to the position of the camera
-		camera_node->SetXPos(getCamera()->GetX());
-		camera_node->SetYPos(getCamera()->GetY());
-		camera_node->SetZPos(getCamera()->GetZ());
+		m_sceneNode->SetXPos(getCamera()->GetX());
+		m_sceneNode->SetYPos(getCamera()->GetY());
+		m_sceneNode->SetZPos(getCamera()->GetZ());
 
 		XMMATRIX identity = XMMatrixIdentity();
 
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (camera_node->check_collision(root_node, camera_node) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Sideways(-0.001f);
-			camera_node->SetXPos(getCamera()->GetX());
-			camera_node->SetYPos(getCamera()->GetY());
-			camera_node->SetZPos(getCamera()->GetZ());
+			m_sceneNode->SetXPos(getCamera()->GetX());
+			m_sceneNode->SetYPos(getCamera()->GetY());
+			m_sceneNode->SetZPos(getCamera()->GetZ());
+		}
+	}
+}
+
+void player::UpdateBullets()
+{
+	for (int x = 0; x < 10; x++)
+	{
+		bullets[x]->UpdateBullet();
+	}
+}
+
+void player::CheckFiring(InputManager* inputManager)
+{
+
+	firingCooldown--;
+	if (firingCooldown < 0)
+		firingCooldown = 0;
+
+
+	bool loop = true;
+	if (inputManager->IsKeyPressed(DIK_E) && firingCooldown == 0)
+	{
+		for (int x = 0; x < 10; x++)
+		{
+			if (!bullets[x]->IsActive() && loop)
+			{
+				bullets[x]->SetActive(m_xPos, m_yPos, m_zPos, m_playerCamera->GetRotationDX(), m_playerCamera->GetRotationDZ());
+				firingCooldown = firingCooldownReset;
+				loop = false;
+			}
 		}
 	}
 }

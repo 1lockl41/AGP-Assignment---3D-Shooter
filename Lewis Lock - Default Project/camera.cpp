@@ -32,15 +32,6 @@ Camera::Camera(float x, float y, float z, float camera_rotation)
 	m_position = XMVectorSet(m_x, m_y, m_z, 0.0);
 }
 
-void Camera::Rotate(float degrees)
-{
-	/*m_camera_rotation += degrees;
-
-	m_dx = sin(m_camera_rotation * (XM_PI / 180));
-	m_dz = cos(m_camera_rotation * (XM_PI / 180));*/
-
-}
-
 void Camera::Forward(float distance)
 {
 	m_moveBackForward += distance;
@@ -140,4 +131,14 @@ void Camera::MoveY(float ySpeed)
 void Camera::MoveZ(float zSpeed)
 {
 	m_z += zSpeed;
+}
+
+float Camera::GetRotationDX()
+{
+	return m_dx;
+}
+
+float Camera::GetRotationDZ()
+{
+	return m_dz;
 }

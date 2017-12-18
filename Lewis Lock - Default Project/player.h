@@ -7,24 +7,44 @@
 #include "baseClass.h"
 #include "camera.h"
 #include "InputManager.h"
-#include "scene_node.h"
+#include "bullet.h"
+
 
 class player : public baseClass
 {
 private:
 	Camera* m_playerCamera;
-
-
+	bullet* bullets[10];
+	float firingCooldown;
+	float firingCooldownReset;
 
 public:
 
-	player(char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext) : baseClass(modelFilename, textureFilename, pD3DDevice, pImmediateContext)
+	player(Scene_node* root_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext) : baseClass(modelFilename, textureFilename, pD3DDevice, pImmediateContext)
 	{
+		firingCooldownReset = 400;
+		firingCooldown = firingCooldownReset;
+
 		m_playerCamera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
+
+		m_sceneNode->SetModel(m_model);
+		m_sceneNode->SetScale(2);
+		root_node->addChildNode(m_sceneNode);
+
+		for (int x = 0; x < 10; x++)
+		{
+			bullets[x] = new bullet(root_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext);
+			bullets[x]->setZPos(20);
+			bullets[x]->setXPos(x);
+		}
 	};
 
 	Camera* getCamera();
 
 	void RotateCamera(InputManager* inputManager);
-	void MoveCamera(InputManager* inputManager, Scene_node* camera_node, Scene_node* root_node);
+	void MoveCamera(InputManager* inputManager, Scene_node* root_node);
+
+	void UpdateBullets();
+	void CheckFiring(InputManager* inputManager);
+
 };

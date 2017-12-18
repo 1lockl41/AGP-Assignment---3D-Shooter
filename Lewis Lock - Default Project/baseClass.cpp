@@ -12,6 +12,7 @@ baseClass::baseClass(char* modelFilename, char* textureFilename, ID3D11Device* p
 	m_model = new Model(pD3DDevice, pImmediateContext);
 	m_model->LoadObjModel(modelFilename);
 
+	m_sceneNode = new Scene_node();
 
 	D3D11_SAMPLER_DESC sampler_desc;
 	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
@@ -33,4 +34,42 @@ baseClass::baseClass(char* modelFilename, char* textureFilename, ID3D11Device* p
 Model* baseClass::getModel()
 {
 	return m_model;
+}
+
+void baseClass::setXPos(float x)
+{
+	m_xPos = x;
+	m_sceneNode->SetXPos(m_xPos);
+}
+
+void baseClass::setYPos(float y)
+{
+	m_yPos = y;
+	m_sceneNode->SetYPos(m_yPos);
+}
+
+void baseClass::setZPos(float z)
+{
+	m_zPos = z;
+	m_sceneNode->SetZPos(m_zPos);
+}
+
+float baseClass::getXPos()
+{
+	return m_xPos;
+}
+
+float baseClass::getYPos()
+{
+	return m_yPos;
+}
+
+float baseClass::getZPos()
+{
+	return m_zPos;
+}
+
+void baseClass::setScale(float scale)
+{
+	m_sceneNode->SetScale(scale);
 }

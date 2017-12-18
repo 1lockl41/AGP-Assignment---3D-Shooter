@@ -11,6 +11,7 @@
 #include "InputManager.h"
 #include "baseClass.h"
 #include "player.h"
+#include "bullet.h"
 #include <dinput.h>
 
 int (WINAPIV * __vsnprintf_s)(char *, size_t, const char*, va_list) = _vsnprintf;
@@ -56,12 +57,6 @@ XMVECTOR g_ambient_light_colour;
 InputManager* inputManager;
 
 Scene_node* g_root_node;
-Scene_node* g_node1;
-Scene_node* g_node2;
-Scene_node* g_camera_node;
-
-baseClass* baseClass1;
-baseClass* baseClass2;
 
 player* player1;
 
@@ -383,9 +378,6 @@ HRESULT InitialiseGraphics()//03 - 01
 	HRESULT hr = S_OK;
 
 	g_root_node = new Scene_node();
-	g_node1 = new Scene_node();
-	g_node2 = new Scene_node();
-	g_camera_node = new Scene_node();
 
 	//Define vertices of a triangle - screen coords -1.0 to +1.0
 	POS_COL_TEX_NORM_VERTEX vertices[] =
@@ -554,24 +546,8 @@ HRESULT InitialiseGraphics()//03 - 01
 
 	D3DX11CreateShaderResourceViewFromFile(g_pD3DDevice, "Assets/texture.bmp", NULL, NULL, &g_pTexture0, NULL);
 
-	baseClass1 = new baseClass("Assets/PointySphere.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
-	baseClass2 = new baseClass("Assets/PointySphere.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
-	player1 = new player("Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
+	player1 = new player(g_root_node,"Assets/PointySphere.obj","Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
 
-	//Scene node management
-	g_node1->SetModel(baseClass1->getModel());
-	g_node2->SetModel(baseClass2->getModel());
-	g_camera_node->SetModel(player1->getModel());
-
-	g_root_node->addChildNode(g_node1);
-	g_root_node->addChildNode(g_node2);
-	g_root_node->addChildNode(g_camera_node);
-
-	g_node1->SetXPos(5);
-	g_node1->SetZPos(20);
-	g_node2->SetXPos(-5);
-	g_node2->SetZPos(20);
-	g_camera_node->SetScale(2);
 
 	return S_OK;
 }
@@ -607,7 +583,9 @@ void RenderFrame(void)
 	//if (IsKeyPressed(DIK_S)) g_node1->IncY(-0.0005f, g_root_node);
 
 	player1->RotateCamera(inputManager);
-	player1->MoveCamera(inputManager, g_camera_node, g_root_node);
+	player1->MoveCamera(inputManager, g_root_node);
+	player1->CheckFiring(inputManager);
+	player1->UpdateBullets();
 
 	g_root_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 
