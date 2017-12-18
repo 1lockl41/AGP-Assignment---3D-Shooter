@@ -123,19 +123,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="baseClass.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="objfilemodel.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="scene_node.cpp" />
     <ClCompile Include="text2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="baseClass.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="objfilemodel.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="scene_node.h" />
     <ClInclude Include="text2D.h" />
   </ItemGroup>

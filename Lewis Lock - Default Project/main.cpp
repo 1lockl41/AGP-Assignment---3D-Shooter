@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_DEPRECATE
 #include <windows.h>
 #include <d3d11.h>
 #include <d3dx11.h>
@@ -8,6 +9,8 @@
 #include "Model.h"
 #include "scene_node.h"
 #include "InputManager.h"
+#include "baseClass.h"
+#include "player.h"
 #include <dinput.h>
 
 int (WINAPIV * __vsnprintf_s)(char *, size_t, const char*, va_list) = _vsnprintf;
@@ -41,8 +44,6 @@ ID3D11Buffer* g_pConstantBuffer0;
 
 ID3D11DepthStencilView* g_pZBuffer;
 
-Camera* camera1;
-
 ID3D11ShaderResourceView* g_pTexture0;
 ID3D11SamplerState* g_pSampler0;
 
@@ -52,23 +53,17 @@ XMVECTOR g_directional_light_shines_from;
 XMVECTOR g_directional_light_colour;
 XMVECTOR g_ambient_light_colour;
 
-Model* model1;
-Model* model2;
-Model* camera_model;
-
-//IDirectInput8* g_direct_input;
-//IDirectInputDevice8* g_keyboard_device;
-//unsigned char g_keyboard_keys_state[256];
-//IDirectInputDevice8* g_mouse_device;
-//DIMOUSESTATE mouseState;
-//DIMOUSESTATE mouseStateLast;
-//int m_screenWidth, m_screenHeight;
 InputManager* inputManager;
 
 Scene_node* g_root_node;
 Scene_node* g_node1;
 Scene_node* g_node2;
 Scene_node* g_camera_node;
+
+baseClass* baseClass1;
+baseClass* baseClass2;
+
+player* player1;
 
 //Define vertex structure
 struct POS_COL_TEX_NORM_VERTEX
@@ -392,15 +387,6 @@ HRESULT InitialiseGraphics()//03 - 01
 	g_node2 = new Scene_node();
 	g_camera_node = new Scene_node();
 
-	model1 = new Model(g_pD3DDevice, g_pImmediateContext);
-	model1->LoadObjModel("Assets/PointySphere.obj");
-
-	model2 = new Model(g_pD3DDevice, g_pImmediateContext);
-	model2->LoadObjModel("Assets/PointySphere.obj");
-
-	camera_model = new Model(g_pD3DDevice, g_pImmediateContext);
-	camera_model->LoadObjModel("Assets/cube.obj");
-
 	//Define vertices of a triangle - screen coords -1.0 to +1.0
 	POS_COL_TEX_NORM_VERTEX vertices[] =
 	{
@@ -556,8 +542,6 @@ HRESULT InitialiseGraphics()//03 - 01
 
 	g_pImmediateContext->IASetInputLayout(g_pInputLayout);
 
-	camera1 = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
-
 	D3D11_SAMPLER_DESC sampler_desc;
 	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
 	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -570,18 +554,14 @@ HRESULT InitialiseGraphics()//03 - 01
 
 	D3DX11CreateShaderResourceViewFromFile(g_pD3DDevice, "Assets/texture.bmp", NULL, NULL, &g_pTexture0, NULL);
 
-	model1->SetTexture(g_pTexture0);
-	model1->SetSampler(g_pSampler0);
-	model2->SetTexture(g_pTexture0);
-	model2->SetSampler(g_pSampler0);
-	camera_model->SetTexture(g_pTexture0);
-	camera_model->SetSampler(g_pSampler0);
-
+	baseClass1 = new baseClass("Assets/PointySphere.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
+	baseClass2 = new baseClass("Assets/PointySphere.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
+	player1 = new player("Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
 
 	//Scene node management
-	g_node1->SetModel(model1);
-	g_node2->SetModel(model2);
-	g_camera_node->SetModel(camera_model);
+	g_node1->SetModel(baseClass1->getModel());
+	g_node2->SetModel(baseClass2->getModel());
+	g_camera_node->SetModel(player1->getModel());
 
 	g_root_node->addChildNode(g_node1);
 	g_root_node->addChildNode(g_node2);
@@ -613,7 +593,7 @@ void RenderFrame(void)
 	g_directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 	g_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
 
-	XMMATRIX view = camera1->GetViewMatrix();
+	XMMATRIX view = player1->getCamera()->GetViewMatrix();
 
 	///////////RENDER FIRST CUBE////////////////////
 	XMMATRIX projection;
@@ -626,125 +606,8 @@ void RenderFrame(void)
 	//if (IsKeyPressed(DIK_W)) g_node1->IncY(0.0005f, g_root_node);
 	//if (IsKeyPressed(DIK_S)) g_node1->IncY(-0.0005f, g_root_node);
 
-
-	if (inputManager->IsKeyPressed(DIK_DOWN))
-	{
-		camera1->Pitch(0.0002f);
-	}
-	if (inputManager->IsKeyPressed(DIK_UP))
-	{
-		camera1->Pitch(-0.0002f);
-	}
-	if (inputManager->IsKeyPressed(DIK_LEFT))
-	{
-		camera1->Yaw(-0.0002f);
-	}
-	if (inputManager->IsKeyPressed(DIK_RIGHT))
-	{
-		camera1->Yaw(0.0002f);
-	}
-
-	if ((inputManager->GetMouseState().lX != inputManager->GetLastMouseState().lX) || (inputManager->GetMouseState().lY != inputManager->GetLastMouseState().lY))
-	{
-		camera1->Yaw(inputManager->GetMouseState().lX * 0.001f);
-		camera1->Pitch(inputManager->GetMouseState().lY * 0.001f);
-
-		inputManager->SetLastMouseState(inputManager->GetMouseState());
-	}
-
-	if (inputManager->IsKeyPressed(DIK_W))
-	{
-		camera1->Forward(0.001f);
-
-		// set camera node to the position of the camera
-		g_camera_node->SetXPos(camera1->GetX());
-		g_camera_node->SetYPos(camera1->GetY());
-		g_camera_node->SetZPos(camera1->GetZ());
-
-		XMMATRIX identity = XMMatrixIdentity();
-
-		// update tree to reflect new camera position
-		g_root_node->UpdateCollisionTree(&identity, 1.0);
-
-		if (g_camera_node->check_collision(g_root_node,g_camera_node) == true)
-		{
-			// if there is a collision, restore camera and camera node positions
-			camera1->Forward(-0.001f);
-			g_camera_node->SetXPos(camera1->GetX()); 
-			g_camera_node->SetYPos(camera1->GetY());
-			g_camera_node->SetZPos(camera1->GetZ());
-
-		}
-	}
-	if (inputManager->IsKeyPressed(DIK_S))
-	{
-		camera1->Forward(-0.001f);
-
-		// set camera node to the position of the camera
-		g_camera_node->SetXPos(camera1->GetX());
-		g_camera_node->SetYPos(camera1->GetY());
-		g_camera_node->SetZPos(camera1->GetZ());
-
-		XMMATRIX identity = XMMatrixIdentity();
-
-		// update tree to reflect new camera position
-		g_root_node->UpdateCollisionTree(&identity, 1.0);
-
-		if (g_camera_node->check_collision(g_root_node, g_camera_node) == true)
-		{
-			// if there is a collision, restore camera and camera node positions
-			camera1->Forward(0.001f);
-			g_camera_node->SetXPos(camera1->GetX());
-			g_camera_node->SetYPos(camera1->GetY());
-			g_camera_node->SetZPos(camera1->GetZ());
-		}
-	}
-	if (inputManager->IsKeyPressed(DIK_A))
-	{
-		camera1->Sideways(-0.001f);
-
-		// set camera node to the position of the camera
-		g_camera_node->SetXPos(camera1->GetX());
-		g_camera_node->SetYPos(camera1->GetY());
-		g_camera_node->SetZPos(camera1->GetZ());
-
-		XMMATRIX identity = XMMatrixIdentity();
-
-		// update tree to reflect new camera position
-		g_root_node->UpdateCollisionTree(&identity, 1.0);
-
-		if (g_camera_node->check_collision(g_root_node, g_camera_node) == true)
-		{
-			// if there is a collision, restore camera and camera node positions
-			camera1->Sideways(0.001f);
-			g_camera_node->SetXPos(camera1->GetX());
-			g_camera_node->SetYPos(camera1->GetY());
-			g_camera_node->SetZPos(camera1->GetZ());
-		}
-	}
-	if (inputManager->IsKeyPressed(DIK_D))
-	{
-		camera1->Sideways(0.001f);
-
-		// set camera node to the position of the camera
-		g_camera_node->SetXPos(camera1->GetX());
-		g_camera_node->SetYPos(camera1->GetY());
-		g_camera_node->SetZPos(camera1->GetZ());
-
-		XMMATRIX identity = XMMatrixIdentity();
-
-		// update tree to reflect new camera position
-		g_root_node->UpdateCollisionTree(&identity, 1.0);
-
-		if (g_camera_node->check_collision(g_root_node, g_camera_node) == true)
-		{
-			// if there is a collision, restore camera and camera node positions
-			camera1->Sideways(-0.001f);
-			g_camera_node->SetXPos(camera1->GetX());
-			g_camera_node->SetYPos(camera1->GetY());
-			g_camera_node->SetZPos(camera1->GetZ());
-		}
-	}
+	player1->RotateCamera(inputManager);
+	player1->MoveCamera(inputManager, g_camera_node, g_root_node);
 
 	g_root_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 
