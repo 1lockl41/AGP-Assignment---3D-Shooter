@@ -12,10 +12,13 @@ class bullet : public baseClass
 private:
 	float m_speed;
 	bool m_active;
+	float m_activeTime;
+	float m_activeTimeReset;
 
 	XMVECTOR m_defaultForward;
 	XMMATRIX m_bulletRotationMatrix;
 	XMVECTOR m_defaultRight;
+	XMVECTOR m_defaultUp;
 	XMVECTOR m_bulletForward;
 	XMVECTOR m_bulletRight;
 	float m_moveLeftRight;
@@ -25,25 +28,31 @@ private:
 
 public:
 
-	bullet(Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext) : baseClass(modelFilename, textureFilename, pD3DDevice, pImmediateContext)
+	bullet(bool belongsToPlayer, Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext) : baseClass(modelFilename, textureFilename, pD3DDevice, pImmediateContext)
 	{
 		m_sceneNode->SetModel(m_model);
 		m_sceneNode->SetScale(1);
 		root_node->addChildNode(m_sceneNode);
-		m_speed = 0.01;
+		m_speed = 0.0001;
 		m_active = false;
+		m_activeTimeReset = 1000;
+		m_activeTime = m_activeTimeReset;
 
 		m_defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 		m_defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+		m_defaultUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 		m_bulletForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 		m_bulletRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 		m_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
+
 		m_moveLeftRight = 0.0f;
 		m_moveBackForward = 0.0f;
 		m_position = XMVectorSet(m_xPos, m_yPos, m_zPos, 0.0);
 
 		m_dx = 0.0f;
 		m_dz = 0.0f;
+
+		m_sceneNode->SetBelongsToPlayer(belongsToPlayer);
 	};
 
 	void moveForward();

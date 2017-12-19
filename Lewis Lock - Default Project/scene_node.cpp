@@ -13,6 +13,8 @@ Scene_node::Scene_node()
 	m_x, m_y, m_z = 0.0f;
 	m_xangle, m_zangle, m_yangle = 0.0f;
 	m_scale = 1.0f;
+
+	m_belongsToPlayer = false;
 }
 
 void Scene_node::SetModel(Model* model)
@@ -277,3 +279,13 @@ bool Scene_node::IncZ(float in, Scene_node* root_node)
 	return false;
 }
 
+
+bool Scene_node::GetBelongsToPlayer()
+{
+	return m_belongsToPlayer;
+}
+
+void Scene_node::SetBelongsToPlayer(bool belongsToPlayer)
+{
+	m_belongsToPlayer = belongsToPlayer;
+}

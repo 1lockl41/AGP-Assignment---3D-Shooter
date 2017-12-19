@@ -12,6 +12,7 @@
 #include "baseClass.h"
 #include "player.h"
 #include "bullet.h"
+#include "enemy.h"
 #include <dinput.h>
 
 int (WINAPIV * __vsnprintf_s)(char *, size_t, const char*, va_list) = _vsnprintf;
@@ -59,6 +60,7 @@ InputManager* inputManager;
 Scene_node* g_root_node;
 
 player* player1;
+enemy* enemy1;
 
 //Define vertex structure
 struct POS_COL_TEX_NORM_VERTEX
@@ -358,16 +360,6 @@ void ShutdownD3D()
 	if (g_pImmediateContext) g_pImmediateContext->Release();
 	if (g_pZBuffer) g_pZBuffer->Release();
 	if (g_pD3DDevice) g_pD3DDevice->Release();
-	//if (g_keyboard_device)
-	//{
-	//	g_keyboard_device->Unacquire();
-	//	g_keyboard_device->Release();
-	//}
-	//if (g_mouse_device)
-	//{
-	//	g_mouse_device->Unacquire();
-	//	g_mouse_device->Release();
-	//}
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -546,8 +538,9 @@ HRESULT InitialiseGraphics()//03 - 01
 
 	D3DX11CreateShaderResourceViewFromFile(g_pD3DDevice, "Assets/texture.bmp", NULL, NULL, &g_pTexture0, NULL);
 
-	player1 = new player(g_root_node,"Assets/PointySphere.obj","Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
-
+	player1 = new player(g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
+	enemy1 = new enemy(g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
+	enemy1->setZPos(10);
 
 	return S_OK;
 }
@@ -567,7 +560,7 @@ void RenderFrame(void)
 
 	g_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	g_directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
-	g_ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f);
+	g_ambient_light_colour = XMVectorSet(0.3f, 0.3f, 0.3f, 0.0f);
 
 	XMMATRIX view = player1->getCamera()->GetViewMatrix();
 
@@ -577,15 +570,12 @@ void RenderFrame(void)
 
 	XMMATRIX identityMatrix = XMMatrixIdentity();
 
-	//if (IsKeyPressed(DIK_D)) g_node1->IncX(0.0005f, g_root_node);
-	//if (IsKeyPressed(DIK_A)) g_node1->IncX(-0.0005f, g_root_node);
-	//if (IsKeyPressed(DIK_W)) g_node1->IncY(0.0005f, g_root_node);
-	//if (IsKeyPressed(DIK_S)) g_node1->IncY(-0.0005f, g_root_node);
-
 	player1->RotateCamera(inputManager);
 	player1->MoveCamera(inputManager, g_root_node);
 	player1->CheckFiring(inputManager);
 	player1->UpdateBullets();
+
+	enemy1->UpdateBullets();
 
 	g_root_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 

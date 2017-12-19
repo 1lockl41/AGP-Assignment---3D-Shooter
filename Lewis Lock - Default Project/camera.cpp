@@ -9,15 +9,11 @@
 #define XM_NO_ALIGNMENT
 #include <xnamath.h>
 
-Camera::Camera(float x, float y, float z, float camera_rotation)
+Camera::Camera(float x, float y, float z)
 {
 	m_x = x;
 	m_y = y;
 	m_z = z;
-	m_camera_rotation = camera_rotation;
-
-	/*m_dx = sin(camera_rotation);
-	m_dz = cos(camera_rotation);*/
 
 	m_dx = 0.0f;
 	m_dz = 0.0f;

@@ -47,12 +47,12 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 
 	if (inputManager->IsKeyPressed(DIK_W))
 	{
-		getCamera()->Forward(0.001f);
+		getCamera()->Forward(m_moveSpeed);
 
 		// set camera node to the position of the camera
-		m_sceneNode->SetXPos(getCamera()->GetX());
-		m_sceneNode->SetYPos(getCamera()->GetY());
-		m_sceneNode->SetZPos(getCamera()->GetZ());
+		setXPos(getCamera()->GetX());
+		setYPos(getCamera()->GetY());
+		setZPos(getCamera()->GetZ());
 
 		XMMATRIX identity = XMMatrixIdentity();
 
@@ -62,21 +62,21 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Forward(-0.001f);
-			m_sceneNode->SetXPos(getCamera()->GetX());
-			m_sceneNode->SetYPos(getCamera()->GetY());
-			m_sceneNode->SetZPos(getCamera()->GetZ());
+			getCamera()->Forward(-m_moveSpeed);
+			setXPos(getCamera()->GetX());
+			setYPos(getCamera()->GetY());
+			setZPos(getCamera()->GetZ());
 
 		}
 	}
 	if (inputManager->IsKeyPressed(DIK_S))
 	{
-		getCamera()->Forward(-0.001f);
+		getCamera()->Forward(-m_moveSpeed);
 
 		// set camera node to the position of the camera
-		m_sceneNode->SetXPos(getCamera()->GetX());
-		m_sceneNode->SetYPos(getCamera()->GetY());
-		m_sceneNode->SetZPos(getCamera()->GetZ());
+		setXPos(getCamera()->GetX());
+		setYPos(getCamera()->GetY());
+		setZPos(getCamera()->GetZ());
 
 		XMMATRIX identity = XMMatrixIdentity();
 
@@ -86,20 +86,20 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Forward(0.001f);
-			m_sceneNode->SetXPos(getCamera()->GetX());
-			m_sceneNode->SetYPos(getCamera()->GetY());
-			m_sceneNode->SetZPos(getCamera()->GetZ());
+			getCamera()->Forward(m_moveSpeed);
+			setXPos(getCamera()->GetX());
+			setYPos(getCamera()->GetY());
+			setZPos(getCamera()->GetZ());
 		}
 	}
 	if (inputManager->IsKeyPressed(DIK_A))
 	{
-		getCamera()->Sideways(-0.001f);
+		getCamera()->Sideways(-m_moveSpeed);
 
 		// set camera node to the position of the camera
-		m_sceneNode->SetXPos(getCamera()->GetX());
-		m_sceneNode->SetYPos(getCamera()->GetY());
-		m_sceneNode->SetZPos(getCamera()->GetZ());
+		setXPos(getCamera()->GetX());
+		setYPos(getCamera()->GetY());
+		setZPos(getCamera()->GetZ());
 
 		XMMATRIX identity = XMMatrixIdentity();
 
@@ -109,20 +109,20 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Sideways(0.001f);
-			m_sceneNode->SetXPos(getCamera()->GetX());
-			m_sceneNode->SetYPos(getCamera()->GetY());
-			m_sceneNode->SetZPos(getCamera()->GetZ());
+			getCamera()->Sideways(m_moveSpeed);
+			setXPos(getCamera()->GetX());
+			setYPos(getCamera()->GetY());
+			setZPos(getCamera()->GetZ());
 		}
 	}
 	if (inputManager->IsKeyPressed(DIK_D))
 	{
-		getCamera()->Sideways(0.001f);
+		getCamera()->Sideways(m_moveSpeed);
 
 		// set camera node to the position of the camera
-		m_sceneNode->SetXPos(getCamera()->GetX());
-		m_sceneNode->SetYPos(getCamera()->GetY());
-		m_sceneNode->SetZPos(getCamera()->GetZ());
+		setXPos(getCamera()->GetX());
+		setYPos(getCamera()->GetY());
+		setZPos(getCamera()->GetZ());
 
 		XMMATRIX identity = XMMatrixIdentity();
 
@@ -132,10 +132,10 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Sideways(-0.001f);
-			m_sceneNode->SetXPos(getCamera()->GetX());
-			m_sceneNode->SetYPos(getCamera()->GetY());
-			m_sceneNode->SetZPos(getCamera()->GetZ());
+			getCamera()->Sideways(-m_moveSpeed);
+			setXPos(getCamera()->GetX());
+			setYPos(getCamera()->GetY());
+			setZPos(getCamera()->GetZ());
 		}
 	}
 }

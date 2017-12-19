@@ -8,6 +8,7 @@
 void bullet::moveForward()
 {
 	m_moveBackForward += m_speed;
+
 }
 
 XMMATRIX bullet::UpdateBulletRotation()
@@ -32,24 +33,38 @@ XMMATRIX bullet::UpdateBulletRotation()
 
 	m_lookat = m_position + m_lookat;
 
-	setXPos(XMVectorGetX(m_position));
-	setYPos(XMVectorGetY(m_position));
-	setZPos(XMVectorGetZ(m_position));
+	setXPos(getXPos() + XMVectorGetX(m_position));
+	setYPos(getYPos() + XMVectorGetY(m_position));
+	setZPos(getZPos() + XMVectorGetZ(m_position));
 
 	return XMMatrixLookAtLH(m_position, m_lookat, m_up);
-
 }
 
 void bullet::UpdateBullet()
 {
 	if (m_active)
 	{
+		m_activeTime--;
+		if (m_activeTime < 0)
+			m_activeTime = 0;
+
+		if (m_activeTime == 0)
+		{
+			m_active = false;
+			m_activeTime = m_activeTimeReset;
+			setXPos(-100);
+			setYPos(-100);
+			setZPos(-100);
+		}
+
 		moveForward();
 		UpdateBulletRotation();
 	}
 	else
 	{
 		setXPos(-100);
+		setYPos(-100);
+		setZPos(-100);
 	}
 }
 
@@ -59,6 +74,7 @@ void bullet::SetActive(float xPos, float yPos, float zPos, float dx, float dz)
 	setXPos(xPos);
 	setYPos(yPos);
 	setZPos(zPos);
+	m_position = XMVectorSet(0.0, 0.0, 0.0, 0.0);
 
 	m_dx = dx;
 	m_dz = dz;

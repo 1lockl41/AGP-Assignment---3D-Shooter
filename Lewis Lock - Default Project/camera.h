@@ -12,7 +12,7 @@
 class Camera
 {
 public:
-	Camera(float x, float y, float z, float camera_rotation);
+	Camera(float x, float y, float z);
 	void Forward(float distance);
 	void Sideways(float distance);
 	XMMATRIX GetViewMatrix();

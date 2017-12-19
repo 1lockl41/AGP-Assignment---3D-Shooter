@@ -19,6 +19,8 @@ private:
 	float m_world_centre_x, m_world_centre_y, m_world_centre_z;
 	float m_world_scale;
 
+	bool m_belongsToPlayer;
+
 
 public:
 	Scene_node();
@@ -44,4 +46,7 @@ public:
 	bool IncX(float in, Scene_node* root_node);
 	bool IncY(float in, Scene_node* root_node);
 	bool IncZ(float in, Scene_node* root_node);
+
+	bool GetBelongsToPlayer();
+	void SetBelongsToPlayer(bool belongsToPlayer);
 };

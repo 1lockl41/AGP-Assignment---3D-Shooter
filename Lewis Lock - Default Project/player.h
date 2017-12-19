@@ -17,6 +17,7 @@ private:
 	bullet* bullets[10];
 	float firingCooldown;
 	float firingCooldownReset;
+	float m_moveSpeed;
 
 public:
 
@@ -24,16 +25,17 @@ public:
 	{
 		firingCooldownReset = 400;
 		firingCooldown = firingCooldownReset;
+		m_moveSpeed = 0.005f;
 
-		m_playerCamera = new Camera(0.0f, 0.0f, -0.5f, 0.0f);
+		m_playerCamera = new Camera(0.0f, 0.0f, -0.5f);
 
 		m_sceneNode->SetModel(m_model);
-		m_sceneNode->SetScale(2);
+		//m_sceneNode->SetScale(2);
 		root_node->addChildNode(m_sceneNode);
 
 		for (int x = 0; x < 10; x++)
 		{
-			bullets[x] = new bullet(root_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext);
+			bullets[x] = new bullet(true, root_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext);
 			bullets[x]->setZPos(20);
 			bullets[x]->setXPos(x);
 		}
