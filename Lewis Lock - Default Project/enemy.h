@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "baseClass.h"
 #include "bullet.h"
+#include "player.h"
 
 class enemy : public baseClass
 {
@@ -13,7 +14,7 @@ private:
 	float m_moveSpeed;
 	float firingCooldownReset;
 	float firingCooldown;
-	bullet* bullets[10];
+	std::vector<bullet*> bullets;
 
 public:
 
@@ -25,11 +26,12 @@ public:
 		m_moveSpeed = 0.005f;
 
 		m_sceneNode->SetModel(m_model);
+		m_sceneNode->SetBelongsToEnemy(true);
 		root_node->addChildNode(m_sceneNode);
 
 		for (int x = 0; x < 10; x++)
 		{
-			bullets[x] = new bullet(false, root_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext);
+			bullets.push_back(new bullet(false, root_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext));
 			bullets[x]->setZPos(20);
 			bullets[x]->setXPos(x);
 		}
@@ -37,6 +39,6 @@ public:
 
 	};
 
-	void UpdateBullets();
-
+	void UpdateBullets(Scene_node* root_node);
+	bool CheckCollisions(Scene_node* root_node);
 };

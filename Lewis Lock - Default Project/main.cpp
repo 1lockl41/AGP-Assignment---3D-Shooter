@@ -573,7 +573,7 @@ void RenderFrame(void)
 	player1->RotateCamera(inputManager);
 	player1->MoveCamera(inputManager, g_root_node);
 	player1->CheckFiring(inputManager);
-	player1->UpdateBullets();
+	player1->UpdateBullets(g_root_node);
 
 	enemy1->UpdateBullets();
 

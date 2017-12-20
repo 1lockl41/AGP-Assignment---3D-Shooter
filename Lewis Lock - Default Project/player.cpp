@@ -59,7 +59,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Forward(-m_moveSpeed);
@@ -83,7 +83,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Forward(m_moveSpeed);
@@ -106,7 +106,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Sideways(m_moveSpeed);
@@ -129,7 +129,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Sideways(-m_moveSpeed);
@@ -140,11 +140,11 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 	}
 }
 
-void player::UpdateBullets()
+void player::UpdateBullets(Scene_node* root_node)
 {
-	for (int x = 0; x < 10; x++)
+	for (int x = 0; x < bullets.size(); x++)
 	{
-		bullets[x]->UpdateBullet();
+		bullets[x]->UpdateBullet(root_node);
 	}
 }
 
@@ -159,7 +159,7 @@ void player::CheckFiring(InputManager* inputManager)
 	bool loop = true;
 	if (inputManager->IsKeyPressed(DIK_E) && firingCooldown == 0)
 	{
-		for (int x = 0; x < 10; x++)
+		for (int x = 0; x < bullets.size(); x++)
 		{
 			if (!bullets[x]->IsActive() && loop)
 			{
@@ -169,4 +169,9 @@ void player::CheckFiring(InputManager* inputManager)
 			}
 		}
 	}
+}
+
+std::vector<bullet*> player::GetPlayerBullets()
+{
+	return bullets;
 }

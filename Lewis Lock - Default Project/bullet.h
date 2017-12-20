@@ -35,7 +35,7 @@ public:
 		root_node->addChildNode(m_sceneNode);
 		m_speed = 0.0001;
 		m_active = false;
-		m_activeTimeReset = 1000;
+		m_activeTimeReset = 3000;
 		m_activeTime = m_activeTimeReset;
 
 		m_defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
@@ -56,7 +56,7 @@ public:
 	};
 
 	void moveForward();
-	void UpdateBullet();
+	void UpdateBullet(Scene_node* root_node);
 	XMMATRIX UpdateBulletRotation();
 	void SetActive(float xPos, float yPos, float zPos, float dx, float dz);
 

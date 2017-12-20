@@ -40,7 +40,7 @@ XMMATRIX bullet::UpdateBulletRotation()
 	return XMMatrixLookAtLH(m_position, m_lookat, m_up);
 }
 
-void bullet::UpdateBullet()
+void bullet::UpdateBullet(Scene_node* root_node)
 {
 	if (m_active)
 	{
@@ -59,6 +59,19 @@ void bullet::UpdateBullet()
 
 		moveForward();
 		UpdateBulletRotation();
+
+		XMMATRIX identity = XMMatrixIdentity();
+		root_node->UpdateCollisionTree(&identity, 1.0);
+
+		if(m_sceneNode->check_collision(root_node, m_sceneNode, m_sceneNode->GetBelongsToPlayer()) == true)
+		{
+			m_active = false;
+			m_activeTime = m_activeTimeReset;
+			setXPos(-100);
+			setYPos(-100);
+			setZPos(-100);
+		}
+
 	}
 	else
 	{

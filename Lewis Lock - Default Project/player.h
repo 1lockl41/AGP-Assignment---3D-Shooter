@@ -14,10 +14,11 @@ class player : public baseClass
 {
 private:
 	Camera* m_playerCamera;
-	bullet* bullets[10];
+	//bullet* bullets[10];
 	float firingCooldown;
 	float firingCooldownReset;
 	float m_moveSpeed;
+	std::vector<bullet*> bullets;
 
 public:
 
@@ -30,12 +31,14 @@ public:
 		m_playerCamera = new Camera(0.0f, 0.0f, -0.5f);
 
 		m_sceneNode->SetModel(m_model);
+		m_sceneNode->SetBelongsToPlayer(true);
+
 		//m_sceneNode->SetScale(2);
 		root_node->addChildNode(m_sceneNode);
 
 		for (int x = 0; x < 10; x++)
 		{
-			bullets[x] = new bullet(true, root_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext);
+			bullets.push_back(new bullet(true, root_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext));
 			bullets[x]->setZPos(20);
 			bullets[x]->setXPos(x);
 		}
@@ -46,7 +49,8 @@ public:
 	void RotateCamera(InputManager* inputManager);
 	void MoveCamera(InputManager* inputManager, Scene_node* root_node);
 
-	void UpdateBullets();
+	void UpdateBullets(Scene_node* root_node);
 	void CheckFiring(InputManager* inputManager);
 
+	std::vector<bullet*> GetPlayerBullets();
 };
