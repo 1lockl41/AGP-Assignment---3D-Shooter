@@ -73,3 +73,8 @@ void baseClass::setScale(float scale)
 {
 	m_sceneNode->SetScale(scale);
 }
+
+Scene_node* baseClass::getSceneNode()
+{
+	return m_sceneNode;
+}

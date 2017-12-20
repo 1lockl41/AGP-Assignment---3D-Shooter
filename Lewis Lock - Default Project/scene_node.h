@@ -53,4 +53,8 @@ public:
 
 	bool GetBelongsToEnemy();
 	void SetBelongsToEnemy(bool belongsToEnemy);
+
+	float GetWorldScale();
+
+	//bool check_collision_bullets(std::vector<bullet*> bullets);
 };

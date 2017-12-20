@@ -575,7 +575,8 @@ void RenderFrame(void)
 	player1->CheckFiring(inputManager);
 	player1->UpdateBullets(g_root_node);
 
-	enemy1->UpdateBullets();
+	enemy1->UpdateBullets(g_root_node);
+	enemy1->UpdateEnemy(player1->GetPlayerBullets(), g_root_node);
 
 	g_root_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 

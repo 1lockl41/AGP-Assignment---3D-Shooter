@@ -16,10 +16,12 @@ protected:
 	ID3D11ShaderResourceView* m_pTexture;
 	ID3D11SamplerState* m_pSampler;
 	Scene_node* m_sceneNode;
+	bool m_active;
 
 public:
 	baseClass(char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext);
 	Model* getModel();
+	Scene_node* getSceneNode();
 
 	void setXPos(float x);
 	void setYPos(float y);

@@ -213,6 +213,40 @@ bool Scene_node::check_collision(Scene_node* compare_tree, Scene_node* object_tr
 	return false;
 }
 
+//bool Scene_node::check_collision_bullets(std::vector<bullet*> bullets)
+//{
+//	for (int i = 0; i < bullets.size; i++)
+//	{
+//
+//		 only check for collisions if both nodes contain a model
+//		if (m_p_model && bullets[i]->getModel())
+//		{
+//			XMVECTOR v1 = GetWorldCentrePosition();
+//			XMVECTOR v2 = bullets[i]->getSceneNode()->GetWorldCentrePosition();
+//			XMVECTOR vdiff = v1 - v2;
+//
+//			XMVECTOR a = XMVector3Length(vdiff);
+//			float x1 = XMVectorGetX(v1);
+//			float x2 = XMVectorGetX(v2);
+//			float y1 = XMVectorGetY(v1);
+//			float y2 = XMVectorGetY(v2);
+//			float z1 = XMVectorGetZ(v1);
+//			float z2 = XMVectorGetZ(v2);
+//
+//			float dx = x1 - x2;
+//			float dy = y1 - y2;
+//			float dz = z1 - z2;
+//
+//			 check bounding sphere collision
+//			if (sqrt(dx*dx + dy*dy + dz*dz) < (bullets[i]->getModel()->GetBoundingSphereRadius() * bullets[i]->getSceneNode()->m_world_scale) + (this->m_p_model->GetBoundingSphereRadius() * m_world_scale))
+//			{
+//				return true;
+//			}
+//		}
+//	}
+//
+//}
+
 bool Scene_node::IncX(float in, Scene_node* root_node)
 {
 	float old_x = m_x;	// save current state 
@@ -305,4 +339,9 @@ bool Scene_node::GetBelongsToEnemy()
 void Scene_node::SetBelongsToEnemy(bool belongsToEnemy)
 {
 	m_belongsToEnemy = belongsToEnemy;
+}
+
+float Scene_node::GetWorldScale()
+{
+	return m_world_scale;
 }

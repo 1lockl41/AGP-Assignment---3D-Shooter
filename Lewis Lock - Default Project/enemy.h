@@ -6,24 +6,37 @@
 #include <stdio.h>
 #include "baseClass.h"
 #include "bullet.h"
-#include "player.h"
 
 class enemy : public baseClass
 {
 private:
 	float m_moveSpeed;
-	float firingCooldownReset;
-	float firingCooldown;
+	float m_firingCooldownReset;
+	float m_firingCooldown;
 	std::vector<bullet*> bullets;
+
+	int m_currHealth;
+	int m_maxHealth;
+
+	int m_damageTaken;
+	float m_damageTakenCooldown;
+	float m_damageTakenCooldownReset;
 
 public:
 
 	enemy(Scene_node* root_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext) : baseClass(modelFilename, textureFilename, pD3DDevice, pImmediateContext)
 	{
 
-		firingCooldownReset = 400;
-		firingCooldown = firingCooldownReset;
+		m_firingCooldownReset = 400;
+		m_firingCooldown = m_firingCooldownReset;
 		m_moveSpeed = 0.005f;
+		m_active = true;
+
+		m_maxHealth = 30;
+		m_currHealth = m_maxHealth;
+		m_damageTaken = 0;
+		m_damageTakenCooldownReset = 200;
+		m_damageTakenCooldown = m_damageTakenCooldownReset;
 
 		m_sceneNode->SetModel(m_model);
 		m_sceneNode->SetBelongsToEnemy(true);
@@ -40,5 +53,6 @@ public:
 	};
 
 	void UpdateBullets(Scene_node* root_node);
-	bool CheckCollisions(Scene_node* root_node);
+	bool CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* root_node);
+	void UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node);
 };

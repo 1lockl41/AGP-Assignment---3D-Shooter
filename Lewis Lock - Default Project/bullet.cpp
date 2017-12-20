@@ -97,3 +97,8 @@ bool bullet::IsActive()
 {
 	return m_active;
 }
+
+int bullet::GetDamage()
+{
+	return m_damage;
+}

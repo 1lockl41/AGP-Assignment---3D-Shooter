@@ -11,9 +11,10 @@ class bullet : public baseClass
 {
 private:
 	float m_speed;
-	bool m_active;
 	float m_activeTime;
 	float m_activeTimeReset;
+
+	int m_damage;
 
 	XMVECTOR m_defaultForward;
 	XMMATRIX m_bulletRotationMatrix;
@@ -31,12 +32,15 @@ public:
 	bullet(bool belongsToPlayer, Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext) : baseClass(modelFilename, textureFilename, pD3DDevice, pImmediateContext)
 	{
 		m_sceneNode->SetModel(m_model);
-		m_sceneNode->SetScale(1);
+		m_sceneNode->SetScale(0.1);
 		root_node->addChildNode(m_sceneNode);
+
 		m_speed = 0.0001;
 		m_active = false;
+
 		m_activeTimeReset = 3000;
 		m_activeTime = m_activeTimeReset;
+		m_damage = 10;
 
 		m_defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 		m_defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
@@ -59,6 +63,8 @@ public:
 	void UpdateBullet(Scene_node* root_node);
 	XMMATRIX UpdateBulletRotation();
 	void SetActive(float xPos, float yPos, float zPos, float dx, float dz);
+
+	int GetDamage();
 
 	bool IsActive();
 };
