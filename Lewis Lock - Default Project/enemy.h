@@ -35,7 +35,7 @@ public:
 		m_maxHealth = 30;
 		m_currHealth = m_maxHealth;
 		m_damageTaken = 0;
-		m_damageTakenCooldownReset = 200;
+		m_damageTakenCooldownReset = 100;
 		m_damageTakenCooldown = m_damageTakenCooldownReset;
 
 		m_sceneNode->SetModel(m_model);

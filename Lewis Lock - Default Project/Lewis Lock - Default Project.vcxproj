@@ -128,12 +128,14 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="objfilemodel.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="scene_node.cpp" />
     <ClCompile Include="text2D.cpp" />
+    <ClCompile Include="wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="baseClass.h" />
@@ -141,11 +143,13 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="level.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="objfilemodel.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="scene_node.h" />
     <ClInclude Include="text2D.h" />
+    <ClInclude Include="wall.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="model_shaders.hlsl">

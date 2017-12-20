@@ -24,9 +24,9 @@ public:
 
 	player(Scene_node* root_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext) : baseClass(modelFilename, textureFilename, pD3DDevice, pImmediateContext)
 	{
-		firingCooldownReset = 400;
+		firingCooldownReset = 100;
 		firingCooldown = firingCooldownReset;
-		m_moveSpeed = 0.005f;
+		m_moveSpeed = 0.05f;
 
 		m_playerCamera = new Camera(0.0f, 0.0f, -0.5f);
 

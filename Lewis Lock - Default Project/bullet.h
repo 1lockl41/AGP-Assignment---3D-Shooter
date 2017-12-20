@@ -35,10 +35,10 @@ public:
 		m_sceneNode->SetScale(0.1);
 		root_node->addChildNode(m_sceneNode);
 
-		m_speed = 0.0001;
+		m_speed = 0.01;
 		m_active = false;
 
-		m_activeTimeReset = 3000;
+		m_activeTimeReset = 1000;
 		m_activeTime = m_activeTimeReset;
 		m_damage = 10;
 

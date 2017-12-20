@@ -13,6 +13,7 @@
 #include "player.h"
 #include "bullet.h"
 #include "enemy.h"
+#include "level.h"
 #include <dinput.h>
 
 int (WINAPIV * __vsnprintf_s)(char *, size_t, const char*, va_list) = _vsnprintf;
@@ -58,6 +59,8 @@ XMVECTOR g_ambient_light_colour;
 InputManager* inputManager;
 
 Scene_node* g_root_node;
+
+level* level1;
 
 player* player1;
 enemy* enemy1;
@@ -537,6 +540,8 @@ HRESULT InitialiseGraphics()//03 - 01
 	g_pD3DDevice->CreateSamplerState(&sampler_desc, &g_pSampler0);
 
 	D3DX11CreateShaderResourceViewFromFile(g_pD3DDevice, "Assets/texture.bmp", NULL, NULL, &g_pTexture0, NULL);
+
+	level1 = new level(10, 10, g_root_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
 
 	player1 = new player(g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
 	enemy1 = new enemy(g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
