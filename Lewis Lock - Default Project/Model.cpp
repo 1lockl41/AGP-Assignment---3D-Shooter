@@ -16,10 +16,14 @@ struct MODEL_CONSTANT_BUFFER
 	XMVECTOR ambient_light_colour; //16 bytes
 }; //128 bytes
 
-Model::Model(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext)
+Model::Model(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
 {
 	m_pD3DDevice = pD3DDevice;
 	m_pImmediateContext = pImmediateContext;
+	m_pRasterSolid = pRasterSolid;
+	m_pRasterSkybox = pRasterSkybox;
+	m_pDepthWriteSkybox = pDepthWriteSolid;
+	m_pDepthWriteSolid = pDepthWriteSolid;
 
 	m_pTexture0 = NULL;
 	m_pSampler0 = NULL;
@@ -31,6 +35,8 @@ Model::Model(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext)
 	m_xangle = 30.0f;
 	m_zangle = 15.0f;
 	m_yangle = 15.0f;
+
+	m_isSkybox = false;
 }
 
 Model::~Model()
@@ -50,7 +56,16 @@ bool Model::LoadObjModel(char* filename)
 	HRESULT hr = S_OK;
 
 	ID3DBlob *VS, *PS, *error;
-	hr = D3DX11CompileFromFile("model_shaders.hlsl", 0, 0, "ModelVS", "vs_4_0", 0, 0, 0, &VS, &error, 0);
+
+	if (m_isSkybox)
+	{
+		hr = D3DX11CompileFromFile("sky_shader.hlsl", 0, 0, "ModelVS", "vs_4_0", 0, 0, 0, &VS, &error, 0);
+	}
+	else
+	{
+		hr = D3DX11CompileFromFile("model_shaders.hlsl", 0, 0, "ModelVS", "vs_4_0", 0, 0, 0, &VS, &error, 0);
+	}
+
 	if (error != 0) //check for shader compilation error
 	{
 		OutputDebugStringA((char*)error->GetBufferPointer());
@@ -61,7 +76,15 @@ bool Model::LoadObjModel(char* filename)
 		};
 	}
 
-	hr = D3DX11CompileFromFile("model_shaders.hlsl", 0, 0, "ModelPS", "ps_4_0", 0, 0, 0, &PS, &error, 0);
+	if (m_isSkybox)
+	{
+		hr = D3DX11CompileFromFile("sky_shader.hlsl", 0, 0, "ModelPS", "ps_4_0", 0, 0, 0, &PS, &error, 0);
+	}
+	else
+	{
+		hr = D3DX11CompileFromFile("model_shaders.hlsl", 0, 0, "ModelPS", "ps_4_0", 0, 0, 0, &PS, &error, 0);
+	}
+
 	if (error != 0)
 	{
 		OutputDebugStringA((char*)error->GetBufferPointer());
@@ -162,7 +185,18 @@ void Model::Draw(XMMATRIX *world, XMMATRIX* view, XMMATRIX* projection, XMVECTOR
 	m_pImmediateContext->UpdateSubresource(m_pConstantBuffer, 0, 0, &model_cb_values, 0, 0);
 	m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer);
 
-	m_pObject->Draw();
+	if (m_isSkybox)
+	{
+		m_pImmediateContext->RSSetState(m_pRasterSkybox);
+		m_pImmediateContext->OMSetDepthStencilState(m_pDepthWriteSkybox,1.0);
+		m_pObject->Draw();
+		m_pImmediateContext->RSSetState(m_pRasterSolid);
+		m_pImmediateContext->OMSetDepthStencilState(m_pDepthWriteSolid,1.0);
+	}
+	else
+	{
+		m_pObject->Draw();
+	}
 }
 
 //void Model::SetXPos(float x)
@@ -313,7 +347,6 @@ float Model::GetBoundingSphereZ()
 	return m_bounding_sphere_centre_z;
 }
 
-
 bool Model::CheckCollisions(Model* model)
 {
 	if (model == this)
@@ -339,5 +372,10 @@ bool Model::CheckCollisions(Model* model)
 	}
 
 	return false;
+}
+
+void Model::SetIsSkybox(bool isSkybox)
+{
+	m_isSkybox = isSkybox;
 }
 

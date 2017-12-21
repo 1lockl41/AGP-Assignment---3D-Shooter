@@ -15,12 +15,8 @@ private:
 
 public:
 
-	wall(float xPos, float yPos, float zPos, Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext) : baseClass(modelFilename, textureFilename, pD3DDevice, pImmediateContext)
+	wall(bool isSkybox, float xPos, float yPos, float zPos, Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox) : baseClass(isSkybox, xPos, yPos, zPos, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox)
 	{
-		setXPos(xPos);
-		setYPos(yPos);
-		setZPos(zPos);
-
 		m_sceneNode->SetModel(m_model);
 
 		root_node->addChildNode(m_sceneNode);

@@ -19,7 +19,7 @@ protected:
 	bool m_active;
 
 public:
-	baseClass(char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext);
+	baseClass(bool isSkybox, int xPos, int yPos, int zPos, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox);
 	Model* getModel();
 	Scene_node* getSceneNode();
 

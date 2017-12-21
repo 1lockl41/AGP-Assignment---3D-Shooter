@@ -29,13 +29,13 @@ private:
 
 public:
 
-	bullet(bool belongsToPlayer, Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext) : baseClass(modelFilename, textureFilename, pD3DDevice, pImmediateContext)
+	bullet(bool isSkybox, int xPos, int yPos, int zPos, bool belongsToPlayer, Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox) : baseClass(isSkybox, xPos, yPos, zPos, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox)
 	{
 		m_sceneNode->SetModel(m_model);
 		m_sceneNode->SetScale(0.1);
 		root_node->addChildNode(m_sceneNode);
 
-		m_speed = 0.01;
+		m_speed = 0.5;
 		m_active = false;
 
 		m_activeTimeReset = 1000;

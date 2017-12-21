@@ -6,10 +6,11 @@
 #include "baseClass.h"
 
 
-baseClass::baseClass(char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext)
+baseClass::baseClass(bool isSkybox, int xPos, int yPos, int zPos, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
 {
 
-	m_model = new Model(pD3DDevice, pImmediateContext);
+	m_model = new Model(pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
+	m_model->SetIsSkybox(isSkybox);
 	m_model->LoadObjModel(modelFilename);
 
 	m_sceneNode = new Scene_node();
@@ -29,6 +30,9 @@ baseClass::baseClass(char* modelFilename, char* textureFilename, ID3D11Device* p
 	m_model->SetTexture(m_pTexture);
 	m_model->SetSampler(m_pSampler);
 
+	setXPos(xPos);
+	setYPos(yPos);
+	setZPos(zPos);
 }
 
 Model* baseClass::getModel()

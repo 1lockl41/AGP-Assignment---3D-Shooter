@@ -22,7 +22,6 @@ private:
 	bool m_belongsToPlayer;
 	bool m_belongsToEnemy;
 
-
 public:
 	Scene_node();
 	void SetModel(Model* model);

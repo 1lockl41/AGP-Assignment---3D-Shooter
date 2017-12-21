@@ -14,6 +14,7 @@
 #include "bullet.h"
 #include "enemy.h"
 #include "level.h"
+#include "wall.h"
 #include <dinput.h>
 
 int (WINAPIV * __vsnprintf_s)(char *, size_t, const char*, va_list) = _vsnprintf;
@@ -47,7 +48,12 @@ ID3D11Buffer* g_pConstantBuffer0;
 
 ID3D11DepthStencilView* g_pZBuffer;
 
-ID3D11ShaderResourceView* g_pTexture0;
+
+ID3D11RasterizerState* g_pRasterSolid;
+ID3D11RasterizerState* g_pRasterSkybox;
+ID3D11DepthStencilState* g_pDepthWriteSolid;
+ID3D11DepthStencilState* g_pDepthWrtieSkybox;
+
 ID3D11SamplerState* g_pSampler0;
 
 Text2D* g_2DText;
@@ -59,8 +65,10 @@ XMVECTOR g_ambient_light_colour;
 InputManager* inputManager;
 
 Scene_node* g_root_node;
+Scene_node* g_sky_node;
 
 level* level1;
+wall* skyBox;
 
 player* player1;
 enemy* enemy1;
@@ -352,7 +360,6 @@ HRESULT InitialiseD3D()
 void ShutdownD3D()
 {
 	if (g_pSampler0) g_pSampler0->Release();
-	if (g_pTexture0) g_pTexture0->Release();
 	if (g_pVertexBuffer) g_pVertexBuffer->Release(); //03 - 01
 	if (g_pInputLayout) g_pInputLayout->Release(); //03 - 01
 	if (g_pVertexShader) g_pVertexShader->Release(); //03 - 01
@@ -373,6 +380,7 @@ HRESULT InitialiseGraphics()//03 - 01
 	HRESULT hr = S_OK;
 
 	g_root_node = new Scene_node();
+	g_sky_node = new Scene_node();
 
 	//Define vertices of a triangle - screen coords -1.0 to +1.0
 	POS_COL_TEX_NORM_VERTEX vertices[] =
@@ -539,13 +547,48 @@ HRESULT InitialiseGraphics()//03 - 01
 
 	g_pD3DDevice->CreateSamplerState(&sampler_desc, &g_pSampler0);
 
-	D3DX11CreateShaderResourceViewFromFile(g_pD3DDevice, "Assets/texture.bmp", NULL, NULL, &g_pTexture0, NULL);
+	D3D11_RASTERIZER_DESC rasterDesc;
+	ZeroMemory(&rasterDesc, sizeof(rasterDesc));
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
 
-	level1 = new level(10, 10, g_root_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
+	/////////////////SKY BOX///////////////////
+	g_pD3DDevice->CreateRasterizerState(&rasterDesc, &g_pRasterSolid);
 
-	player1 = new player(g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
-	enemy1 = new enemy(g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext);
-	enemy1->setZPos(10);
+	rasterDesc.CullMode = D3D11_CULL_FRONT;
+	g_pD3DDevice->CreateRasterizerState(&rasterDesc, &g_pRasterSkybox);
+
+
+	D3D11_DEPTH_STENCIL_DESC depthDesc;
+	depthDesc.DepthEnable = true;
+	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthDesc.StencilEnable = false;
+	depthDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depthDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSolid);
+	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWrtieSkybox);
+
+
+	g_sky_node->addChildNode(g_root_node);
+
+	level1 = new level(false,20, 20, g_root_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+
+	player1 = new player(false,10,0,10,g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	enemy1 = new enemy(false,6,0,10,g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	skyBox = new wall(true,20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	skyBox->setScale(50);
+	skyBox->getModel()->SetIsSkybox(true);
 
 	return S_OK;
 }
@@ -563,9 +606,9 @@ void RenderFrame(void)
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
 	g_pImmediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	g_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	g_directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
-	g_ambient_light_colour = XMVectorSet(0.3f, 0.3f, 0.3f, 0.0f);
+	g_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, 10000.0f, 0.0f);
+	g_directional_light_colour = XMVectorSet(0.4f, 0.4f, 0.4f, 0.0f);
+	g_ambient_light_colour = XMVectorSet(0.8f, 0.8f, 0.8f, 0.0f);
 
 	XMMATRIX view = player1->getCamera()->GetViewMatrix();
 
@@ -583,7 +626,7 @@ void RenderFrame(void)
 	enemy1->UpdateBullets(g_root_node);
 	enemy1->UpdateEnemy(player1->GetPlayerBullets(), g_root_node);
 
-	g_root_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
+	g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 
 	g_2DText->AddText("some text hello", -1.0, +1.0, .1);
 

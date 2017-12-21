@@ -12,6 +12,11 @@ private:
 	ID3D11Device* m_pD3DDevice;
 	ID3D11DeviceContext* m_pImmediateContext;
 
+	ID3D11RasterizerState* m_pRasterSolid;
+	ID3D11RasterizerState* m_pRasterSkybox;
+	ID3D11DepthStencilState* m_pDepthWriteSolid;
+	ID3D11DepthStencilState* m_pDepthWriteSkybox;
+
 	ObjFileModel* m_pObject;
 	ID3D11VertexShader* m_pVShader;
 	ID3D11PixelShader* m_pPShader;
@@ -31,10 +36,12 @@ private:
 	void CalculateBoundingSphereRadius();
 	XMVECTOR GetBoundingSphereWorldSpacePosition();
 
+	bool m_isSkybox;
+
 
 
 public:
-	Model(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext);
+	Model(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox);
 	bool LoadObjModel(char* filename);
 	void Draw(XMMATRIX *world, XMMATRIX* view, XMMATRIX* projection, XMVECTOR directional_light_colour, XMVECTOR ambient_light_colour, XMVECTOR directional_light_shines_from);
 	~Model();
@@ -53,4 +60,5 @@ public:
 	float GetBoundingSphereY();
 	float GetBoundingSphereZ();
 	float GetBoundingSphereRadius();
+	void SetIsSkybox(bool isSkybox);
 };
