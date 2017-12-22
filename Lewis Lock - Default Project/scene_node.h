@@ -14,6 +14,7 @@ private:
 
 	float m_x, m_y, m_z;
 	float m_xangle, m_zangle, m_yangle;
+	float m_oldyangle;
 	float m_scale;
 
 	float m_world_centre_x, m_world_centre_y, m_world_centre_z;
@@ -47,6 +48,10 @@ public:
 	bool IncY(float in, Scene_node* root_node);
 	bool IncZ(float in, Scene_node* root_node);
 
+	bool IncSetX(float xPos, Scene_node* root_node);
+	bool IncSetY(float yPos, Scene_node* root_node);
+	bool IncSetZ(float zPos, Scene_node* root_node);
+
 	bool GetBelongsToPlayer();
 	void SetBelongsToPlayer(bool belongsToPlayer);
 
@@ -55,5 +60,5 @@ public:
 
 	float GetWorldScale();
 
-	//bool check_collision_bullets(std::vector<bullet*> bullets);
+	void SetYangle(float y);
 };

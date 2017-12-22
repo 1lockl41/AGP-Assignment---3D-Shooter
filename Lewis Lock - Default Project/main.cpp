@@ -48,13 +48,10 @@ ID3D11Buffer* g_pConstantBuffer0;
 
 ID3D11DepthStencilView* g_pZBuffer;
 
-
 ID3D11RasterizerState* g_pRasterSolid;
 ID3D11RasterizerState* g_pRasterSkybox;
 ID3D11DepthStencilState* g_pDepthWriteSolid;
 ID3D11DepthStencilState* g_pDepthWrtieSkybox;
-
-ID3D11SamplerState* g_pSampler0;
 
 Text2D* g_2DText;
 
@@ -359,7 +356,6 @@ HRESULT InitialiseD3D()
 ///////////////////////////////////////////////////////////////////////////
 void ShutdownD3D()
 {
-	if (g_pSampler0) g_pSampler0->Release();
 	if (g_pVertexBuffer) g_pVertexBuffer->Release(); //03 - 01
 	if (g_pInputLayout) g_pInputLayout->Release(); //03 - 01
 	if (g_pVertexShader) g_pVertexShader->Release(); //03 - 01
@@ -537,16 +533,6 @@ HRESULT InitialiseGraphics()//03 - 01
 
 	g_pImmediateContext->IASetInputLayout(g_pInputLayout);
 
-	D3D11_SAMPLER_DESC sampler_desc;
-	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
-	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	g_pD3DDevice->CreateSamplerState(&sampler_desc, &g_pSampler0);
-
 	D3D11_RASTERIZER_DESC rasterDesc;
 	ZeroMemory(&rasterDesc, sizeof(rasterDesc));
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
@@ -584,11 +570,12 @@ HRESULT InitialiseGraphics()//03 - 01
 
 	level1 = new level(false,20, 20, g_root_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
 
-	player1 = new player(false,10,0,10,g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	player1 = new player(false,20,0,20,g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
 	enemy1 = new enemy(false,6,0,10,g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
 	skyBox = new wall(true,20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
 	skyBox->setScale(50);
 	skyBox->getModel()->SetIsSkybox(true);
+	enemy1->getSceneNode()->SetBelongsToEnemy(true);
 
 	return S_OK;
 }
@@ -624,7 +611,7 @@ void RenderFrame(void)
 	player1->UpdateBullets(g_root_node);
 
 	enemy1->UpdateBullets(g_root_node);
-	enemy1->UpdateEnemy(player1->GetPlayerBullets(), g_root_node);
+	enemy1->UpdateEnemy(player1->GetPlayerBullets(), g_root_node, player1->getCamera()->GetX(), player1->getCamera()->GetZ());
 
 	g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 

@@ -17,7 +17,6 @@ private:
 	//bullet* bullets[10];
 	float firingCooldown;
 	float firingCooldownReset;
-	float m_moveSpeed;
 	std::vector<bullet*> bullets;
 
 public:
@@ -26,7 +25,7 @@ public:
 	{
 		firingCooldownReset = 25;
 		firingCooldown = firingCooldownReset;
-		m_moveSpeed = 0.25f;
+		m_speed = 0.25f;
 
 		m_playerCamera = new Camera(getXPos(), getYPos(), getZPos()-0.5f);
 

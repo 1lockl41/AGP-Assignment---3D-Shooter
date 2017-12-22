@@ -31,10 +31,10 @@ Model::Model(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, I
 	m_scale = 1.0f;
 	m_x = 0.0f;
 	m_y = 0.0f;
-	m_z = 15.0f;
-	m_xangle = 30.0f;
-	m_zangle = 15.0f;
-	m_yangle = 15.0f;
+	m_z = 0.0f;
+	m_xangle = 0.0f;
+	m_zangle = 0.0f;
+	m_yangle = 0.0f;
 
 	m_isSkybox = false;
 }
@@ -234,13 +234,6 @@ void Model::Draw(XMMATRIX *world, XMMATRIX* view, XMMATRIX* projection, XMVECTOR
 //	m_x += 0.0001f;
 //}
 //
-//void Model::LookAt_XZ(float x, float z)
-//{
-//	m_xangle = sin(x * (XM_PI / 180));
-//	m_zangle = cos(z * (XM_PI / 180));
-//
-//	m_yangle = atan2(m_xangle, m_yangle) * (180.0 / XM_PI);
-//}
 
 void Model::CalculateModelCentrePoint()
 {
@@ -377,5 +370,10 @@ bool Model::CheckCollisions(Model* model)
 void Model::SetIsSkybox(bool isSkybox)
 {
 	m_isSkybox = isSkybox;
+}
+
+void Model::SetYangle(float y)
+{
+	m_yangle = y;
 }
 

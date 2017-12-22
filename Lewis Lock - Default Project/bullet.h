@@ -10,7 +10,6 @@
 class bullet : public baseClass
 {
 private:
-	float m_speed;
 	float m_activeTime;
 	float m_activeTimeReset;
 

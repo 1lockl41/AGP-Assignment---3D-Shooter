@@ -45,13 +45,9 @@ public:
 	bool LoadObjModel(char* filename);
 	void Draw(XMMATRIX *world, XMMATRIX* view, XMMATRIX* projection, XMVECTOR directional_light_colour, XMVECTOR ambient_light_colour, XMVECTOR directional_light_shines_from);
 	~Model();
-	//void SetXPos(float x);
-	//void SetYPos(float y);
-	//void SetZPos(float z);
-	//float GetXPos();
-	//float GetYPos();
-	//float GetZPos();
-	//void LookAt_XZ(float x, float z);
+
+	void SetYangle(float y);
+
 	//void MoveForward();
 	bool CheckCollisions(Model* model);
 	void SetTexture(ID3D11ShaderResourceView* texture);
@@ -61,4 +57,5 @@ public:
 	float GetBoundingSphereZ();
 	float GetBoundingSphereRadius();
 	void SetIsSkybox(bool isSkybox);
+
 };

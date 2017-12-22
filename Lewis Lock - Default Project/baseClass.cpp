@@ -82,3 +82,11 @@ Scene_node* baseClass::getSceneNode()
 {
 	return m_sceneNode;
 }
+
+void baseClass::LookAt_XZ(float xPos, float zPos)
+{
+	m_yAngle = atan2((xPos - m_xPos), (zPos - m_zPos))  * (180 / XM_PI);
+	m_sceneNode->SetYangle(m_yAngle);
+	m_model->SetYangle(m_yAngle);
+
+}

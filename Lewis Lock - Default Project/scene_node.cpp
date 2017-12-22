@@ -12,6 +12,7 @@ Scene_node::Scene_node()
 
 	m_x, m_y, m_z = 0.0f;
 	m_xangle, m_zangle, m_yangle = 0.0f;
+	m_oldyangle = 0.0f;
 	m_scale = 1.0f;
 
 	m_belongsToPlayer = false;
@@ -89,6 +90,10 @@ void Scene_node::execute(XMMATRIX *world, XMMATRIX* view, XMMATRIX* projection, 
 	XMMATRIX local_world = XMMatrixIdentity();
 
 	local_world = XMMatrixRotationX(XMConvertToRadians(m_xangle));
+	if (m_yangle != 0 && m_yangle != m_oldyangle)
+	{
+		m_oldyangle = m_yangle;
+	}
 	local_world *= XMMatrixRotationY(XMConvertToRadians(m_yangle));
 	local_world *= XMMatrixRotationZ(XMConvertToRadians(m_zangle));
 
@@ -170,6 +175,11 @@ bool Scene_node::check_collision(Scene_node* compare_tree, Scene_node* object_tr
 		return false;
 	}
 
+	if (belongsToPlayer && compare_tree->GetBelongsToEnemy())
+	{
+		return false;
+	}
+
 	// only check for collisions if both nodes contain a model
 	if (m_p_model && compare_tree->m_p_model)
 	{
@@ -213,40 +223,6 @@ bool Scene_node::check_collision(Scene_node* compare_tree, Scene_node* object_tr
 	return false;
 }
 
-//bool Scene_node::check_collision_bullets(std::vector<bullet*> bullets)
-//{
-//	for (int i = 0; i < bullets.size; i++)
-//	{
-//
-//		 only check for collisions if both nodes contain a model
-//		if (m_p_model && bullets[i]->getModel())
-//		{
-//			XMVECTOR v1 = GetWorldCentrePosition();
-//			XMVECTOR v2 = bullets[i]->getSceneNode()->GetWorldCentrePosition();
-//			XMVECTOR vdiff = v1 - v2;
-//
-//			XMVECTOR a = XMVector3Length(vdiff);
-//			float x1 = XMVectorGetX(v1);
-//			float x2 = XMVectorGetX(v2);
-//			float y1 = XMVectorGetY(v1);
-//			float y2 = XMVectorGetY(v2);
-//			float z1 = XMVectorGetZ(v1);
-//			float z2 = XMVectorGetZ(v2);
-//
-//			float dx = x1 - x2;
-//			float dy = y1 - y2;
-//			float dz = z1 - z2;
-//
-//			 check bounding sphere collision
-//			if (sqrt(dx*dx + dy*dy + dz*dz) < (bullets[i]->getModel()->GetBoundingSphereRadius() * bullets[i]->getSceneNode()->m_world_scale) + (this->m_p_model->GetBoundingSphereRadius() * m_world_scale))
-//			{
-//				return true;
-//			}
-//		}
-//	}
-//
-//}
-
 bool Scene_node::IncX(float in, Scene_node* root_node)
 {
 	float old_x = m_x;	// save current state 
@@ -281,7 +257,7 @@ bool Scene_node::IncY(float in, Scene_node* root_node)
 	// since state has changed, need to update collision tree
 	// this basic system requires entire hirearchy to be updated
 	// so start at root node passing in identity matrix
-	root_node->UpdateCollisionTree(&identity, 1.0);
+	//root_node->UpdateCollisionTree(&identity, 1.0);
 
 	// check for collision of this node (and children) against all other nodes
 	if (check_collision(root_node, this, m_belongsToPlayer) == true)
@@ -305,7 +281,7 @@ bool Scene_node::IncZ(float in, Scene_node* root_node)
 	// since state has changed, need to update collision tree
 	// this basic system requires entire hirearchy to be updated
 	// so start at root node passing in identity matrix
-	root_node->UpdateCollisionTree(&identity, 1.0);
+	//root_node->UpdateCollisionTree(&identity, 1.0);
 
 	// check for collision of this node (and children) against all other nodes
 	if (check_collision(root_node, this, m_belongsToPlayer) == true)
@@ -319,6 +295,78 @@ bool Scene_node::IncZ(float in, Scene_node* root_node)
 	return false;
 }
 
+
+bool Scene_node::IncSetX(float xPos, Scene_node* root_node)
+{
+	float old_x = m_x;	// save current state 
+	m_x = xPos;		// update state
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	// since state has changed, need to update collision tree
+	// this basic system requires entire hirearchy to be updated
+	// so start at root node passing in identity matrix
+	//root_node->UpdateCollisionTree(&identity, 1.0);
+
+	// check for collision of this node (and children) against all other nodes
+	if (check_collision(root_node, this, m_belongsToPlayer) == true)
+	{
+		// if collision restore state
+		m_x = old_x;
+
+		return true;
+	}
+
+	return false;
+}
+
+bool Scene_node::IncSetY(float yPos, Scene_node* root_node)
+{
+	float old_y = m_y;	// save current state 
+	m_y = yPos;	// update state
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	// since state has changed, need to update collision tree
+	// this basic system requires entire hirearchy to be updated
+	// so start at root node passing in identity matrix
+	root_node->UpdateCollisionTree(&identity, 1.0);
+
+	// check for collision of this node (and children) against all other nodes
+	if (check_collision(root_node, this, m_belongsToPlayer) == true)
+	{
+		// if collision restore state
+		m_y = old_y;
+
+		return true;
+	}
+
+	return false;
+}
+
+bool Scene_node::IncSetZ(float zPos, Scene_node* root_node)
+{
+	float old_z = m_z;	// save current state 
+	m_z = zPos;		// update state
+
+	XMMATRIX identity = XMMatrixIdentity();
+
+	// since state has changed, need to update collision tree
+	// this basic system requires entire hirearchy to be updated
+	// so start at root node passing in identity matrix
+	root_node->UpdateCollisionTree(&identity, 1.0);
+
+	// check for collision of this node (and children) against all other nodes
+	if (check_collision(root_node, this, m_belongsToPlayer) == true)
+	{
+		// if collision restore state
+		m_z = old_z;
+
+		return true;
+	}
+
+	return false;
+}
 
 bool Scene_node::GetBelongsToPlayer()
 {
@@ -344,4 +392,9 @@ void Scene_node::SetBelongsToEnemy(bool belongsToEnemy)
 float Scene_node::GetWorldScale()
 {
 	return m_world_scale;
+}
+
+void Scene_node::SetYangle(float y)
+{
+	m_yangle = y;
 }

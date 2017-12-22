@@ -47,7 +47,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 
 	if (inputManager->IsKeyPressed(DIK_W))
 	{
-		getCamera()->Forward(m_moveSpeed);
+		getCamera()->Forward(m_speed);
 
 		// set camera node to the position of the camera
 		setXPos(getCamera()->GetX());
@@ -62,7 +62,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Forward(-m_moveSpeed);
+			getCamera()->Forward(-m_speed);
 			setXPos(getCamera()->GetX());
 			setYPos(getCamera()->GetY());
 			setZPos(getCamera()->GetZ());
@@ -71,7 +71,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 	}
 	if (inputManager->IsKeyPressed(DIK_S))
 	{
-		getCamera()->Forward(-m_moveSpeed);
+		getCamera()->Forward(-m_speed);
 
 		// set camera node to the position of the camera
 		setXPos(getCamera()->GetX());
@@ -86,7 +86,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Forward(m_moveSpeed);
+			getCamera()->Forward(m_speed);
 			setXPos(getCamera()->GetX());
 			setYPos(getCamera()->GetY());
 			setZPos(getCamera()->GetZ());
@@ -94,7 +94,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 	}
 	if (inputManager->IsKeyPressed(DIK_A))
 	{
-		getCamera()->Sideways(-m_moveSpeed);
+		getCamera()->Sideways(-m_speed);
 
 		// set camera node to the position of the camera
 		setXPos(getCamera()->GetX());
@@ -109,7 +109,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Sideways(m_moveSpeed);
+			getCamera()->Sideways(m_speed);
 			setXPos(getCamera()->GetX());
 			setYPos(getCamera()->GetY());
 			setZPos(getCamera()->GetZ());
@@ -117,7 +117,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 	}
 	if (inputManager->IsKeyPressed(DIK_D))
 	{
-		getCamera()->Sideways(m_moveSpeed);
+		getCamera()->Sideways(m_speed);
 
 		// set camera node to the position of the camera
 		setXPos(getCamera()->GetX());
@@ -132,7 +132,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Sideways(-m_moveSpeed);
+			getCamera()->Sideways(-m_speed);
 			setXPos(getCamera()->GetX());
 			setYPos(getCamera()->GetY());
 			setZPos(getCamera()->GetZ());
