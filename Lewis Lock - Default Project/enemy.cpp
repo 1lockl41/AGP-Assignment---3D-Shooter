@@ -16,18 +16,6 @@ void enemy::UpdateBullets(Scene_node* root_node)
 
 bool enemy::CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* root_node)
 {
-	/*XMMATRIX identity = XMMatrixIdentity();
-	root_node->UpdateCollisionTree(&identity, 1.0);
-
-	if (m_sceneNode->check_collision_bullets(bullets) == true)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}*/
-
 	for (int i = 0; i < bullets.size(); i++)
 	{
 	
@@ -70,7 +58,8 @@ void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, flo
 		m_damageTakenCooldown--;
 
 		LookAt_XZ(x_lookAt, y_lookAt);
-		MoveForward(root_node);
+		MoveTowards(root_node,x_lookAt, y_lookAt);
+		CheckFiring(x_lookAt, y_lookAt);
 
 		if (CheckCollisionsBullets(bullets, root_node))
 		{
@@ -102,53 +91,36 @@ void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, flo
 
 }
 
-XMMATRIX enemy::UpdateMove(Scene_node* root_node)
+void enemy::MoveTowards(Scene_node* root_node, float x_lookAt, float y_lookAt)
 {
-	m_rotationMatrix = XMMatrixRotationRollPitchYaw(m_xAngle, m_zAngle, 0);
-	m_lookat = XMVector3TransformCoord(m_defaultForward, m_rotationMatrix);
-	m_lookat = XMVector3Normalize(m_lookat);
+	m_dir = XMVectorSet(x_lookAt - m_xPos, 0.0, y_lookAt - m_zPos, 0.0);
+	m_dir = XMVector3Normalize(m_dir);
 
-	XMMATRIX RotateYTempMatrix;
-	RotateYTempMatrix = XMMatrixRotationY(m_yAngle);
-
-	m_right = XMVector3TransformCoord(m_defaultRight, RotateYTempMatrix);
-	m_up = XMVector3TransformCoord(m_up, RotateYTempMatrix);
-	m_forward = XMVector3TransformCoord(m_defaultForward, RotateYTempMatrix);
-
-	m_position += m_moveLeftRight*m_right;
-	m_position += m_moveBackForward*m_forward;
-
-	m_moveLeftRight = 0.0f;
-	m_moveBackForward = 0.0f;
-
-	m_lookat = m_position + m_lookat;
-
-	//m_sceneNode->IncX(m_speed, root_node);
-	//m_sceneNode->IncZ(m_speed, root_node);
-
-	//setXPos(m_sceneNode->GetXPos());
-	//setZPos(m_sceneNode->GetZPos());
-
-	m_sceneNode->IncSetX(getXPos() + XMVectorGetX(m_position), root_node);
-	m_sceneNode->IncSetY(getYPos() + XMVectorGetY(m_position), root_node);
-	m_sceneNode->IncSetZ(getZPos() + XMVectorGetZ(m_position), root_node);
-
-	setXPos(m_sceneNode->GetXPos());
-	setYPos(m_sceneNode->GetYPos());
-	setZPos(m_sceneNode->GetZPos());
-	/*setXPos(getXPos() + XMVectorGetX(m_position));
-	setYPos(getYPos() + XMVectorGetY(m_position));
-	setZPos(getZPos() + XMVectorGetZ(m_position));*/
-
-
-
-	m_position = XMVectorSet(0.0, 0.0, 0.0, 0.0);
-
-	return XMMatrixLookAtLH(m_position, m_lookat, m_up);
+	setXPos(m_xPos + (XMVectorGetX(m_dir)*m_speed));
+	setZPos(m_zPos + (XMVectorGetZ(m_dir)*m_speed));
 }
 
-void enemy::MoveForward(Scene_node* root_node)
+
+void enemy::CheckFiring(float x_lookAt, float y_lookAt)
 {
-	m_moveBackForward += m_speed;
-	UpdateMove(root_node);
+	m_firingCooldown--;
+	if (m_firingCooldown < 0)
+		m_firingCooldown = 0;
+
+
+	bool loop = true;
+	if (m_firingCooldown == 0)
+	{
+		for (int x = 0; x < bullets.size(); x++)
+		{
+			if (!bullets[x]->IsActive() && loop)
+			{
+				bullets[x]->SetActive(m_xPos, m_yPos, m_zPos, m_xAngle, m_zAngle);
+				bullets[x]->SetDirection(x_lookAt, y_lookAt);
+				m_firingCooldown = m_firingCooldownReset;
+				loop = false;
+			}
+		}
+	}
+
 }

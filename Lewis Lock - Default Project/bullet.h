@@ -24,7 +24,8 @@ private:
 	float m_moveLeftRight;
 	float m_moveBackForward;
 	XMVECTOR m_position, m_lookat, m_up;
-	float m_dx, m_dz;
+
+	XMVECTOR m_dir;
 
 public:
 
@@ -48,22 +49,24 @@ public:
 		m_bulletRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 		m_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
 
+		m_dir = XMVectorSet(0.0, 1.0, 0.0, 0.0);
+
 		m_moveLeftRight = 0.0f;
 		m_moveBackForward = 0.0f;
 		m_position = XMVectorSet(m_xPos, m_yPos, m_zPos, 0.0);
-
-		m_dx = 0.0f;
-		m_dz = 0.0f;
 
 		m_sceneNode->SetBelongsToPlayer(belongsToPlayer);
 	};
 
 	void moveForward();
 	void UpdateBullet(Scene_node* root_node);
-	XMMATRIX UpdateBulletRotation();
+	void UpdateBulletRotation();
 	void SetActive(float xPos, float yPos, float zPos, float dx, float dz);
 
 	int GetDamage();
 
 	bool IsActive();
+
+	void MoveTowards();
+	void SetDirection(float x_lookAt, float y_lookAt);
 };

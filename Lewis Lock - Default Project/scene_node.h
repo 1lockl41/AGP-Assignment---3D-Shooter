@@ -20,6 +20,8 @@ private:
 	float m_world_centre_x, m_world_centre_y, m_world_centre_z;
 	float m_world_scale;
 
+	bool m_isPlayer;
+	bool m_isEnemy;
 	bool m_belongsToPlayer;
 	bool m_belongsToEnemy;
 
@@ -42,7 +44,7 @@ public:
 	XMVECTOR GetWorldCentrePosition();
 
 	void UpdateCollisionTree(XMMATRIX* world, float scale);
-	bool check_collision(Scene_node* compare_tree, Scene_node* object_tree_root, bool belongsToPlayer);
+	bool check_collision(Scene_node* compare_tree, Scene_node* object_tree_root);
 
 	bool IncX(float in, Scene_node* root_node);
 	bool IncY(float in, Scene_node* root_node);
@@ -57,6 +59,13 @@ public:
 
 	bool GetBelongsToEnemy();
 	void SetBelongsToEnemy(bool belongsToEnemy);
+
+	bool GetIsPlayer();
+	void SetIsPlayer(bool isPlayer);
+
+	bool GetIsEnemy();
+	void SetIsEnemy(bool isEnemy);
+
 
 	float GetWorldScale();
 

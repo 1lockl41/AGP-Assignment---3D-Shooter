@@ -21,22 +21,14 @@ private:
 	float m_damageTakenCooldown;
 	float m_damageTakenCooldownReset;
 
-	XMVECTOR m_defaultForward;
-	XMMATRIX m_rotationMatrix;
-	XMVECTOR m_defaultRight;
-	XMVECTOR m_defaultUp;
-	XMVECTOR m_forward;
-	XMVECTOR m_right;
-	float m_moveLeftRight;
-	float m_moveBackForward;
-	XMVECTOR m_lookat, m_up, m_position;
+	XMVECTOR m_dir;
 
 public:
 
 	enemy(bool isSkybox, int xPos, int yPos, int zPos,Scene_node* root_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox) : baseClass(isSkybox, xPos, yPos, zPos,modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox)
 	{
 
-		m_firingCooldownReset = 25;
+		m_firingCooldownReset = 45;
 		m_firingCooldown = m_firingCooldownReset;
 		m_speed = 0.1f;
 		m_active = true;
@@ -48,27 +40,18 @@ public:
 		m_damageTakenCooldown = m_damageTakenCooldownReset;
 
 		m_sceneNode->SetModel(m_model);
-		m_sceneNode->SetBelongsToEnemy(true);
+		m_sceneNode->SetIsEnemy(true);
 		root_node->addChildNode(m_sceneNode);
+		
+		m_dir = XMVectorSet(0.0, 1.0, 0.0, 0.0);
 
-
-		m_defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-		m_defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-		m_defaultUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-		m_forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-		m_right = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-		m_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
-
-		m_position = XMVectorSet(0.0, 0.0, 0.0, 0.0);
-
-		m_moveLeftRight = 0.0f;
-		m_moveBackForward = 0.0f;
 
 		for (int x = 0; x < 10; x++)
 		{
 			bullets.push_back(new bullet(false, -100,-100,-100,false, root_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid,pDepthWrtieSkybox));
 			bullets[x]->setZPos(20);
 			bullets[x]->setXPos(x);
+			bullets[x]->getSceneNode()->SetBelongsToEnemy(true);
 		}
 
 
@@ -77,6 +60,6 @@ public:
 	void UpdateBullets(Scene_node* root_node);
 	bool CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* root_node);
 	void UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt);
-	XMMATRIX UpdateMove(Scene_node* root_node);
-	void MoveForward(Scene_node* root_node);
+	void MoveTowards(Scene_node* root_node, float x_lookAt, float y_lookAt);
+	void CheckFiring(float x_lookAt, float y_lookAt);
 };

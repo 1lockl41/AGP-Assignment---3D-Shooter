@@ -32,7 +32,6 @@ public:
 		m_sceneNode->SetModel(m_model);
 		m_sceneNode->SetBelongsToPlayer(true);
 
-
 		//m_sceneNode->SetScale(2);
 		root_node->addChildNode(m_sceneNode);
 
@@ -41,6 +40,7 @@ public:
 			bullets.push_back(new bullet(false, -100,-100,-100,true, root_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox,pDepthWriteSolid, pDepthWrtieSkybox));
 			bullets[x]->setZPos(20);
 			bullets[x]->setXPos(x);
+			bullets[x]->getSceneNode()->SetBelongsToPlayer(true);
 		}
 	};
 

@@ -17,6 +17,8 @@ Scene_node::Scene_node()
 
 	m_belongsToPlayer = false;
 	m_belongsToEnemy = false;
+	m_isPlayer = false;
+	m_isEnemy = false;
 }
 
 void Scene_node::SetModel(Model* model)
@@ -164,18 +166,23 @@ void Scene_node::UpdateCollisionTree(XMMATRIX* world, float scale)
 	}
 }
 
-bool Scene_node::check_collision(Scene_node* compare_tree, Scene_node* object_tree_root, bool belongsToPlayer)
+bool Scene_node::check_collision(Scene_node* compare_tree, Scene_node* object_tree_root)
 {
 	// check to see if root of tree being compared is same as root node of object tree being checked
 	// i.e. stop object node and children being checked against each other
 	if (object_tree_root == compare_tree) return false;
 
-	if (belongsToPlayer && compare_tree->GetBelongsToPlayer())
+	if (object_tree_root->GetBelongsToPlayer() && compare_tree->GetBelongsToPlayer())
 	{
 		return false;
 	}
 
-	if (belongsToPlayer && compare_tree->GetBelongsToEnemy())
+	if (object_tree_root->GetBelongsToEnemy() && compare_tree->GetBelongsToEnemy())
+	{
+		return false;
+	}
+
+	if (object_tree_root->GetBelongsToPlayer() && compare_tree->GetBelongsToEnemy())
 	{
 		return false;
 	}
@@ -210,14 +217,14 @@ bool Scene_node::check_collision(Scene_node* compare_tree, Scene_node* object_tr
 	for (int i = 0; i< compare_tree->m_children.size(); i++)
 	{
 		// check for collsion against all compared tree child nodes 
-		if (check_collision(compare_tree->m_children[i], object_tree_root, belongsToPlayer) == true) return true;
+		if (check_collision(compare_tree->m_children[i], object_tree_root) == true) return true;
 	}
 
 	// iterate through composite object child nodes
 	for (int i = 0; i< m_children.size(); i++)
 	{
 		// check all the child nodes of the composite object against compared tree
-		if (m_children[i]->check_collision(compare_tree, object_tree_root, belongsToPlayer) == true) return true;
+		if (m_children[i]->check_collision(compare_tree, object_tree_root) == true) return true;
 	}
 
 	return false;
@@ -236,7 +243,7 @@ bool Scene_node::IncX(float in, Scene_node* root_node)
 	root_node->UpdateCollisionTree(&identity, 1.0);
 
 	// check for collision of this node (and children) against all other nodes
-	if (check_collision(root_node, this, m_belongsToPlayer) == true)
+	if (check_collision(root_node, this) == true)
 	{
 		// if collision restore state
 		m_x = old_x;
@@ -260,7 +267,7 @@ bool Scene_node::IncY(float in, Scene_node* root_node)
 	//root_node->UpdateCollisionTree(&identity, 1.0);
 
 	// check for collision of this node (and children) against all other nodes
-	if (check_collision(root_node, this, m_belongsToPlayer) == true)
+	if (check_collision(root_node, this) == true)
 	{
 		// if collision restore state
 		m_y = old_y;
@@ -284,7 +291,7 @@ bool Scene_node::IncZ(float in, Scene_node* root_node)
 	//root_node->UpdateCollisionTree(&identity, 1.0);
 
 	// check for collision of this node (and children) against all other nodes
-	if (check_collision(root_node, this, m_belongsToPlayer) == true)
+	if (check_collision(root_node, this) == true)
 	{
 		// if collision restore state
 		m_z = old_z;
@@ -309,7 +316,7 @@ bool Scene_node::IncSetX(float xPos, Scene_node* root_node)
 	//root_node->UpdateCollisionTree(&identity, 1.0);
 
 	// check for collision of this node (and children) against all other nodes
-	if (check_collision(root_node, this, m_belongsToPlayer) == true)
+	if (check_collision(root_node, this) == true)
 	{
 		// if collision restore state
 		m_x = old_x;
@@ -333,7 +340,7 @@ bool Scene_node::IncSetY(float yPos, Scene_node* root_node)
 	root_node->UpdateCollisionTree(&identity, 1.0);
 
 	// check for collision of this node (and children) against all other nodes
-	if (check_collision(root_node, this, m_belongsToPlayer) == true)
+	if (check_collision(root_node, this) == true)
 	{
 		// if collision restore state
 		m_y = old_y;
@@ -357,7 +364,7 @@ bool Scene_node::IncSetZ(float zPos, Scene_node* root_node)
 	root_node->UpdateCollisionTree(&identity, 1.0);
 
 	// check for collision of this node (and children) against all other nodes
-	if (check_collision(root_node, this, m_belongsToPlayer) == true)
+	if (check_collision(root_node, this) == true)
 	{
 		// if collision restore state
 		m_z = old_z;
@@ -387,6 +394,27 @@ bool Scene_node::GetBelongsToEnemy()
 void Scene_node::SetBelongsToEnemy(bool belongsToEnemy)
 {
 	m_belongsToEnemy = belongsToEnemy;
+}
+
+
+bool Scene_node::GetIsPlayer()
+{
+	return m_isPlayer;
+}
+
+void Scene_node::SetIsPlayer(bool isPlayer)
+{
+	m_isEnemy = isPlayer;
+}
+
+bool Scene_node::GetIsEnemy()
+{
+	return m_isEnemy;
+}
+
+void Scene_node::SetIsEnemy(bool isEnemy)
+{
+	m_isEnemy = isEnemy;
 }
 
 float Scene_node::GetWorldScale()

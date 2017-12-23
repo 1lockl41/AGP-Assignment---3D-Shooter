@@ -59,7 +59,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Forward(-m_speed);
@@ -83,7 +83,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Forward(m_speed);
@@ -106,7 +106,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Sideways(m_speed);
@@ -129,7 +129,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		// update tree to reflect new camera position
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if (m_sceneNode->check_collision(root_node, m_sceneNode, true) == true)
+		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
 			getCamera()->Sideways(-m_speed);

@@ -63,6 +63,7 @@ InputManager* inputManager;
 
 Scene_node* g_root_node;
 Scene_node* g_sky_node;
+Scene_node* g_floor_node;
 
 level* level1;
 wall* skyBox;
@@ -377,6 +378,7 @@ HRESULT InitialiseGraphics()//03 - 01
 
 	g_root_node = new Scene_node();
 	g_sky_node = new Scene_node();
+	g_floor_node = new Scene_node();
 
 	//Define vertices of a triangle - screen coords -1.0 to +1.0
 	POS_COL_TEX_NORM_VERTEX vertices[] =
@@ -566,9 +568,10 @@ HRESULT InitialiseGraphics()//03 - 01
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWrtieSkybox);
 
 
-	g_sky_node->addChildNode(g_root_node);
+	g_sky_node->addChildNode(g_floor_node);
+	g_floor_node->addChildNode(g_root_node);
 
-	level1 = new level(false,20, 20, g_root_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	level1 = new level(false,20, 20, g_root_node, g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
 
 	player1 = new player(false,20,0,20,g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
 	enemy1 = new enemy(false,6,0,10,g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
@@ -611,7 +614,7 @@ void RenderFrame(void)
 	player1->UpdateBullets(g_root_node);
 
 	enemy1->UpdateBullets(g_root_node);
-	enemy1->UpdateEnemy(player1->GetPlayerBullets(), g_root_node, player1->getCamera()->GetX(), player1->getCamera()->GetZ());
+	enemy1->UpdateEnemy(player1->GetPlayerBullets(), g_root_node, player1->getXPos(), player1->getZPos());
 
 	g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 

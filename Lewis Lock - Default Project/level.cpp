@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "level.h"
 
-level::level(bool isSkybox, int levelSizeX, int levelSizeZ, Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
+level::level(bool isSkybox, int levelSizeX, int levelSizeZ, Scene_node* root_node, Scene_node* floor_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
 {
 	m_level_node = new Scene_node();
 	root_node->addChildNode(m_level_node); 
@@ -21,7 +21,7 @@ level::level(bool isSkybox, int levelSizeX, int levelSizeZ, Scene_node* root_nod
 		for (int j = 0; j < m_levelSizeZ; j++)
 		{
 			//add floor wall block to z axis 
-			vec.push_back(new wall(isSkybox,i * 2, -4, j * 2, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox));
+			vec.push_back(new wall(isSkybox,i * 2, -4, j * 2, floor_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox));
 
 			vec2.push_back(0);
 		}

@@ -11,15 +11,22 @@ void bullet::moveForward()
 
 }
 
-XMMATRIX bullet::UpdateBulletRotation()
+void bullet::UpdateBulletRotation()
 {
 
-	m_bulletRotationMatrix = XMMatrixRotationRollPitchYaw(m_dx, m_dz, 0);
+	m_bulletRotationMatrix = XMMatrixRotationRollPitchYaw(m_xAngle, m_yAngle, m_zAngle);
 	m_lookat = XMVector3TransformCoord(m_defaultForward, m_bulletRotationMatrix);
 	m_lookat = XMVector3Normalize(m_lookat);
 
 	XMMATRIX RotateYTempMatrix;
-	RotateYTempMatrix = XMMatrixRotationY(m_dz);
+	if (m_yAngle == 0)
+	{
+		RotateYTempMatrix = XMMatrixRotationY(m_zAngle);
+	}
+	else
+	{
+		RotateYTempMatrix = XMMatrixRotationY(m_yAngle);
+	}
 
 	m_bulletRight = XMVector3TransformCoord(m_defaultRight, RotateYTempMatrix);
 	m_up = XMVector3TransformCoord(m_up, RotateYTempMatrix);
@@ -37,7 +44,18 @@ XMMATRIX bullet::UpdateBulletRotation()
 	setYPos(getYPos() + XMVectorGetY(m_position));
 	setZPos(getZPos() + XMVectorGetZ(m_position));
 
-	return XMMatrixLookAtLH(m_position, m_lookat, m_up);
+}
+
+void bullet::SetDirection(float x_lookAt, float y_lookAt)
+{
+	m_dir = XMVectorSet(x_lookAt - m_xPos, 0.0, y_lookAt - m_zPos, 0.0);
+	m_dir = XMVector3Normalize(m_dir);
+}
+
+void bullet::MoveTowards()
+{
+	setXPos(m_xPos + (XMVectorGetX(m_dir)*m_speed));
+	setZPos(m_zPos + (XMVectorGetZ(m_dir)*m_speed));
 }
 
 void bullet::UpdateBullet(Scene_node* root_node)
@@ -57,13 +75,20 @@ void bullet::UpdateBullet(Scene_node* root_node)
 			setZPos(-100);
 		}
 
-		moveForward();
-		UpdateBulletRotation();
+		if (m_sceneNode->GetBelongsToPlayer())
+		{
+			moveForward();
+			UpdateBulletRotation();
+		}
+		else
+		{
+			MoveTowards();
+		}
 
 		XMMATRIX identity = XMMatrixIdentity();
 		root_node->UpdateCollisionTree(&identity, 1.0);
 
-		if(m_sceneNode->check_collision(root_node, m_sceneNode, m_sceneNode->GetBelongsToPlayer()) == true)
+		if(m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			m_active = false;
 			m_activeTime = m_activeTimeReset;
@@ -89,8 +114,9 @@ void bullet::SetActive(float xPos, float yPos, float zPos, float dx, float dz)
 	setZPos(zPos);
 	m_position = XMVectorSet(0.0, 0.0, 0.0, 0.0);
 
-	m_dx = dx;
-	m_dz = dz;
+	m_xAngle = dx;
+
+	m_zAngle = dz;
 }
 
 bool bullet::IsActive()
