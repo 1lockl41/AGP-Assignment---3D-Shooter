@@ -40,12 +40,6 @@ IDXGISwapChain* g_pSwapChain = NULL;
 
 ID3D11RenderTargetView* g_pBackBufferRTView = NULL;
 
-ID3D11Buffer* g_pVertexBuffer;
-ID3D11VertexShader* g_pVertexShader;
-ID3D11PixelShader* g_pPixelShader;
-ID3D11InputLayout* g_pInputLayout;
-ID3D11Buffer* g_pConstantBuffer0;
-
 ID3D11DepthStencilView* g_pZBuffer;
 
 ID3D11RasterizerState* g_pRasterSolid;
@@ -357,13 +351,8 @@ HRESULT InitialiseD3D()
 ///////////////////////////////////////////////////////////////////////////
 void ShutdownD3D()
 {
-	if (g_pVertexBuffer) g_pVertexBuffer->Release(); //03 - 01
-	if (g_pInputLayout) g_pInputLayout->Release(); //03 - 01
-	if (g_pVertexShader) g_pVertexShader->Release(); //03 - 01
-	if (g_pPixelShader) g_pPixelShader->Release(); //03 - 01
 	if (g_pBackBufferRTView) g_pBackBufferRTView->Release();
 	if (g_pSwapChain) g_pSwapChain->Release();
-	if (g_pConstantBuffer0) g_pConstantBuffer0->Release();
 	if (g_pImmediateContext) g_pImmediateContext->Release();
 	if (g_pZBuffer) g_pZBuffer->Release();
 	if (g_pD3DDevice) g_pD3DDevice->Release();
@@ -432,108 +421,6 @@ HRESULT InitialiseGraphics()//03 - 01
 		{ XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT4(0.5f, 0.0f, 0.5f, 1.0f), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) }
 	};
 
-	//Set up and create vertex buffer
-	D3D11_BUFFER_DESC bufferDesc;
-	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //Used by cpu and gpu
-	bufferDesc.ByteWidth = sizeof(vertices); //total size of buffer, 3 vertices
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Use as a vertex buffer
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; //Allow cpu access
-	hr = g_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer); //Create the buffer
-
-	if (FAILED(hr)) //return error code on failure
-	{
-		return hr;
-	}
-
-	//Create constant buffer
-	D3D11_BUFFER_DESC constant_buffer_desc;
-	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
-	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT; //can use UpdateSubresource() to update
-	constant_buffer_desc.ByteWidth = 128; // MUST be a multiple of 16, calculate from CB struct
-	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; //Use as a constant buffer
-
-	hr = g_pD3DDevice->CreateBuffer(&constant_buffer_desc, NULL, &g_pConstantBuffer0);
-
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	//Copy the vertices into the buffer
-	D3D11_MAPPED_SUBRESOURCE ms;
-
-	//Lock the buffer to allow writing
-	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
-
-	//Copy the data
-	memcpy(ms.pData, vertices, sizeof(vertices));
-
-	//Unlock the buffer
-	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
-
-	//Load and compile pixel and vertex shaders - use vs_5_0 to target DX11 hardware only
-	ID3DBlob *VS, *PS, *error;
-	hr = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, &error, 0);
-
-	if (error != 0) //check for shader compilation error
-	{
-		OutputDebugStringA((char*)error->GetBufferPointer());
-		error->Release();
-		if (FAILED(hr)) //dont fail if error is just a warning
-		{
-			return hr;
-		};
-	}
-
-	hr = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, &error, 0);
-
-	if (error != 0)
-	{
-		OutputDebugStringA((char*)error->GetBufferPointer());
-		error->Release();
-		if (FAILED(hr))//dont fail if error is just a warning
-		{
-			return hr;
-		};
-	}
-
-	//Create shader objects
-	hr = g_pD3DDevice->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &g_pVertexShader);
-
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	hr = g_pD3DDevice->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &g_pPixelShader);
-
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	//Set the shader objects as active
-	g_pImmediateContext->VSSetShader(g_pVertexShader, 0, 0);
-	g_pImmediateContext->PSSetShader(g_pPixelShader, 0, 0);
-
-	//Create and set the input layout object
-	D3D11_INPUT_ELEMENT_DESC iedesc[]=
-	{
-		{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
-	};
-
-	hr = g_pD3DDevice->CreateInputLayout(iedesc, ARRAYSIZE(iedesc), VS->GetBufferPointer(), VS->GetBufferSize(), &g_pInputLayout);
-
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	g_pImmediateContext->IASetInputLayout(g_pInputLayout);
 
 	D3D11_RASTERIZER_DESC rasterDesc;
 	ZeroMemory(&rasterDesc, sizeof(rasterDesc));

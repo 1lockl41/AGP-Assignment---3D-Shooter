@@ -97,13 +97,13 @@
     <FxCompile Include="model_shaders.hlsl">
       <Filter>Header Files</Filter>
     </FxCompile>
-    <FxCompile Include="shaders.hlsl">
-      <Filter>Header Files</Filter>
-    </FxCompile>
     <FxCompile Include="text2D_shaders.hlsl">
       <Filter>Header Files</Filter>
     </FxCompile>
     <FxCompile Include="sky_shader.hlsl">
+      <Filter>Header Files</Filter>
+    </FxCompile>
+    <FxCompile Include="shaderstest.hlsl">
       <Filter>Header Files</Filter>
     </FxCompile>
   </ItemGroup>
