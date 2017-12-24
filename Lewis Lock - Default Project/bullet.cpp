@@ -119,6 +119,15 @@ void bullet::SetActive(float xPos, float yPos, float zPos, float dx, float dz)
 	m_zAngle = dz;
 }
 
+void bullet::Deactivate()
+{
+	m_active = false;
+	m_activeTime = m_activeTimeReset;
+	setXPos(-100);
+	setYPos(-100);
+	setZPos(-100);
+}
+
 bool bullet::IsActive()
 {
 	return m_active;

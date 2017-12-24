@@ -55,9 +55,10 @@ XMVECTOR g_ambient_light_colour;
 
 InputManager* inputManager;
 
-Scene_node* g_root_node;
-Scene_node* g_sky_node;
-Scene_node* g_floor_node;
+Scene_node* g_sky_node;  //The root node, contains only the sky box. All collisions ignore this.
+Scene_node* g_floor_node; //The second node in the tree, contains the floor. All collisions currently ignore this, as there is no gravity.
+Scene_node* g_actors_node; //The third node in the tree, contains all moving actors such as players, enemies and bullets. Player and enemy movement will use this for collision so they dont move through each other.
+Scene_node* g_walls_node; //The last node in the last, contains the walls for the level. Bullets will use this for collision so they are destroyed when hitting a wall.
 
 level* level1;
 wall* skyBox;
@@ -365,9 +366,10 @@ HRESULT InitialiseGraphics()//03 - 01
 {
 	HRESULT hr = S_OK;
 
-	g_root_node = new Scene_node();
+	g_walls_node = new Scene_node();
 	g_sky_node = new Scene_node();
 	g_floor_node = new Scene_node();
+	g_actors_node = new Scene_node();
 
 	//Define vertices of a triangle - screen coords -1.0 to +1.0
 	POS_COL_TEX_NORM_VERTEX vertices[] =
@@ -456,16 +458,16 @@ HRESULT InitialiseGraphics()//03 - 01
 
 
 	g_sky_node->addChildNode(g_floor_node);
-	g_floor_node->addChildNode(g_root_node);
+	g_floor_node->addChildNode(g_actors_node);
+	g_actors_node->addChildNode(g_walls_node);
 
-	level1 = new level(false,20, 20, g_root_node, g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	level1 = new level(false,20, 20, g_walls_node, g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
 
-	player1 = new player(false,20,0,20,g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
-	enemy1 = new enemy(false,6,0,10,g_root_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	player1 = new player(false,30,0,30,g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	enemy1 = new enemy(false,6,0,10, g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
 	skyBox = new wall(true,20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
 	skyBox->setScale(50);
 	skyBox->getModel()->SetIsSkybox(true);
-	enemy1->getSceneNode()->SetBelongsToEnemy(true);
 
 	return S_OK;
 }
@@ -483,7 +485,7 @@ void RenderFrame(void)
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
 	g_pImmediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	g_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, 10000.0f, 0.0f);
+	g_directional_light_shines_from = XMVectorSet(0.0f, 0.0f,0.0f, 0.0f);
 	g_directional_light_colour = XMVectorSet(0.4f, 0.4f, 0.4f, 0.0f);
 	g_ambient_light_colour = XMVectorSet(0.8f, 0.8f, 0.8f, 0.0f);
 
@@ -495,13 +497,10 @@ void RenderFrame(void)
 
 	XMMATRIX identityMatrix = XMMatrixIdentity();
 
-	player1->RotateCamera(inputManager);
-	player1->MoveCamera(inputManager, g_root_node);
-	player1->CheckFiring(inputManager);
-	player1->UpdateBullets(g_root_node);
+	player1->UpdatePlayer(inputManager, g_actors_node, enemy1->GetBullets(), g_walls_node);
 
-	enemy1->UpdateBullets(g_root_node);
-	enemy1->UpdateEnemy(player1->GetPlayerBullets(), g_root_node, player1->getXPos(), player1->getZPos());
+	enemy1->UpdateBullets(g_walls_node);
+	enemy1->UpdateEnemy(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos());
 
 	g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 

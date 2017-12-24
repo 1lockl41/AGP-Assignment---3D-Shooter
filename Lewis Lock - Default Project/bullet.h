@@ -38,7 +38,7 @@ public:
 		m_speed = 0.5;
 		m_active = false;
 
-		m_activeTimeReset = 1000;
+		m_activeTimeReset = 200;
 		m_activeTime = m_activeTimeReset;
 		m_damage = 10;
 
@@ -62,6 +62,7 @@ public:
 	void UpdateBullet(Scene_node* root_node);
 	void UpdateBulletRotation();
 	void SetActive(float xPos, float yPos, float zPos, float dx, float dz);
+	void Deactivate();
 
 	int GetDamage();
 
