@@ -15,6 +15,7 @@
 #include "enemy.h"
 #include "level.h"
 #include "wall.h"
+#include "AImanager.h"
 #include <dinput.h>
 
 int (WINAPIV * __vsnprintf_s)(char *, size_t, const char*, va_list) = _vsnprintf;
@@ -45,7 +46,7 @@ ID3D11DepthStencilView* g_pZBuffer;
 ID3D11RasterizerState* g_pRasterSolid;
 ID3D11RasterizerState* g_pRasterSkybox;
 ID3D11DepthStencilState* g_pDepthWriteSolid;
-ID3D11DepthStencilState* g_pDepthWrtieSkybox;
+ID3D11DepthStencilState* g_pDepthWriteSkybox;
 
 Text2D* g_2DText;
 
@@ -64,7 +65,7 @@ level* level1;
 wall* skyBox;
 
 player* player1;
-enemy* enemy1;
+AImanager* AImanager1;
 
 //Define vertex structure
 struct POS_COL_TEX_NORM_VERTEX
@@ -454,18 +455,18 @@ HRESULT InitialiseGraphics()//03 - 01
 
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSolid);
 	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWrtieSkybox);
+	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSkybox);
 
 
 	g_sky_node->addChildNode(g_floor_node);
 	g_floor_node->addChildNode(g_actors_node);
 	g_actors_node->addChildNode(g_walls_node);
 
-	level1 = new level(false,20, 20, g_walls_node, g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	level1 = new level(false,20, 20, g_walls_node, g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
-	player1 = new player(false,30,0,30,g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
-	enemy1 = new enemy(false,6,0,10, g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
-	skyBox = new wall(true,20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWrtieSkybox);
+	player1 = new player(false,20,0,20,g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	AImanager1 = new AImanager(4,g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	skyBox = new wall(true,20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	skyBox->setScale(50);
 	skyBox->getModel()->SetIsSkybox(true);
 
@@ -497,10 +498,9 @@ void RenderFrame(void)
 
 	XMMATRIX identityMatrix = XMMatrixIdentity();
 
-	player1->UpdatePlayer(inputManager, g_actors_node, enemy1->GetBullets(), g_walls_node);
+	player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node);
 
-	enemy1->UpdateBullets(g_walls_node);
-	enemy1->UpdateEnemy(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos());
+	AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node);
 
 	g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 

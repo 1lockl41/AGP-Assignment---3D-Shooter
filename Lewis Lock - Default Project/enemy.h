@@ -25,7 +25,7 @@ private:
 
 public:
 
-	enemy(bool isSkybox, int xPos, int yPos, int zPos, Scene_node* actors_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox) : baseClass(isSkybox, xPos, yPos, zPos,modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox)
+	enemy(bool isSkybox, int xPos, int yPos, int zPos, Scene_node* actors_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWriteSkybox) : baseClass(isSkybox, xPos, yPos, zPos,modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox)
 	{
 
 		m_firingCooldownReset = 45;
@@ -49,7 +49,7 @@ public:
 
 		for (int x = 0; x < 10; x++)
 		{
-			bullets.push_back(new bullet(false, -100,-100,-100,false, actors_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid,pDepthWrtieSkybox));
+			bullets.push_back(new bullet(false, -100,-100,-100,false, actors_node, bulletModelFileName, bulletTextureFileName, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox));
 			bullets[x]->setZPos(20);
 			bullets[x]->setXPos(x);
 			bullets[x]->getSceneNode()->SetBelongsToEnemy(true);

@@ -69,7 +69,7 @@ void level::InitialiseLevelWalls()
 		}
 	}
 
-	m_levelWallsVector2D[10][10] = 1;
+	//m_levelWallsVector2D[10][10] = 1;
 }
 
 void level::SetupLevelWalls(bool isSkybox, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)

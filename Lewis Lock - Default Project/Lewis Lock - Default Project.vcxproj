@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AImanager.cpp" />
     <ClCompile Include="baseClass.cpp" />
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="camera.cpp" />
@@ -138,6 +139,7 @@
     <ClCompile Include="wall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AImanager.h" />
     <ClInclude Include="baseClass.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="camera.h" />
