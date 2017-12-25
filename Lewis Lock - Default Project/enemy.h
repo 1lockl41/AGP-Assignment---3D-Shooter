@@ -5,7 +5,7 @@
 #include <dxerr.h>
 #include <stdio.h>
 #include "baseClass.h"
-#include "bullet.h"
+#include "player.h"
 
 class enemy : public baseClass
 {
@@ -60,7 +60,7 @@ public:
 
 	void UpdateBullets(Scene_node* root_node);
 	bool CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* root_node);
-	void UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt);
+	void UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt, player* player1);
 	void MoveTowards(Scene_node* root_node, float x_lookAt, float y_lookAt);
 	void CheckFiring(float x_lookAt, float y_lookAt);
 

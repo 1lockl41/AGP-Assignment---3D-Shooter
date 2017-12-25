@@ -69,12 +69,12 @@ std::vector<bullet*> AImanager::GetAllBullets()
 	return tempAllBullets;
 }
 
-void AImanager::UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actors_node, float x_lookAt, float y_lookAt, Scene_node* walls_node)
+void AImanager::UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actors_node, float x_lookAt, float y_lookAt, Scene_node* walls_node, player* player1)
 {
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		enemies[i]->UpdateBullets(walls_node);
-		enemies[i]->UpdateEnemy(bullets, actors_node, x_lookAt, y_lookAt);
+		enemies[i]->UpdateEnemy(bullets, actors_node, x_lookAt, y_lookAt, player1);
 
 	}
 }

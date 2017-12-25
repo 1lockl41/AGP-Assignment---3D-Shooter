@@ -52,7 +52,7 @@ bool enemy::CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* roo
 	return false;
 }
 
-void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt)
+void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt, player* player1)
 {
 	if (m_active)
 	{
@@ -82,6 +82,7 @@ void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, flo
 					setYPos(-100);
 					setZPos(-100);
 					m_damageTakenCooldown = m_damageTakenCooldownReset;
+					player1->AddPlayerScore(5);
 				}
 			}
 		}

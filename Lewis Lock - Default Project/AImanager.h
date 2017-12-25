@@ -26,7 +26,7 @@ public:
 	std::vector<enemy*> GetEnemies();
 	std::vector<bullet*> GetAllBullets();
 
-	void UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actors_node, float x_lookAt, float y_lookAt, Scene_node* walls_node);
+	void UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actors_node, float x_lookAt, float y_lookAt, Scene_node* walls_node, player* player1);
 
 
 

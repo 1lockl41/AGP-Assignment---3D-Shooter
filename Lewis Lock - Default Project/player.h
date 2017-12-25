@@ -27,6 +27,8 @@ private:
 	float m_damageTakenCooldown;
 	float m_damageTakenCooldownReset;
 
+	int m_playerScore;
+
 public:
 
 	player(bool isSkybox, int xPos, int yPos, int zPos, Scene_node* actors_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox) : baseClass(isSkybox, xPos, yPos, zPos, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox)
@@ -35,6 +37,7 @@ public:
 		firingCooldownReset = 25;
 		firingCooldown = firingCooldownReset;
 		m_speed = 0.25f;
+		m_playerScore = 0;
 
 		m_playerCamera = new Camera(getXPos(), getYPos(), getZPos()-0.5f);
 
@@ -73,4 +76,7 @@ public:
 	bool CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* root_node);
 
 	void UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, std::vector<bullet*> bullets, Scene_node* walls_node);
+
+	void AddPlayerScore(int addScore);
+	int GetPlayerScore();
 };

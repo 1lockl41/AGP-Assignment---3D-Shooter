@@ -251,3 +251,13 @@ void player::UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, s
 
 
 }
+
+void player::AddPlayerScore(int addScore)
+{
+	m_playerScore += addScore;
+}
+
+int player::GetPlayerScore()
+{
+	return m_playerScore;
+}
