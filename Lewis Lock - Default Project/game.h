@@ -62,7 +62,6 @@ private:
 
 	player* player1;
 	AImanager* AImanager1;
-	//ParticleGenerator* ParticleGenerator1;
 
 public:
 
@@ -74,10 +73,5 @@ public:
 	void RenderFrame(void);
 
 	HRESULT InitialiseGraphics(void);
-
-
-
-
-
 
 };

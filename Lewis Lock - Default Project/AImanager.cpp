@@ -9,10 +9,10 @@ AImanager::AImanager(int numberOfEnemies, Scene_node* actors_node, Scene_node* p
 {
 	m_numberOfEnemies = numberOfEnemies;
 
-	m_SpawnPoint1 = XMVectorSet(6.0, 0.0, 6.0, 0.0);
-	m_SpawnPoint2 = XMVectorSet(6.0, 0.0, 32.0, 0.0);
-	m_SpawnPoint3 = XMVectorSet(32.0, 0.0, 6.0, 0.0);
-	m_SpawnPoint4 = XMVectorSet(32.0, 0.0, 32.0, 0.0);
+	m_SpawnPoint1 = XMVectorSet(12.0, 0.0, 12.0, 0.0);
+	m_SpawnPoint2 = XMVectorSet(12.0, 0.0, 64.0, 0.0);
+	m_SpawnPoint3 = XMVectorSet(64.0, 0.0, 12.0, 0.0);
+	m_SpawnPoint4 = XMVectorSet(64.0, 0.0, 64.0, 0.0);
 
 	spawnEnemyCooldownReset = 200;
 	spawnEnemyCooldown = spawnEnemyCooldownReset;
@@ -76,7 +76,6 @@ void AImanager::UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actor
 	{
 		enemies[i]->UpdateBullets(walls_node);
 		enemies[i]->UpdateEnemy(bullets, actors_node, x_lookAt, y_lookAt, player1);
-
 	}
 }
 

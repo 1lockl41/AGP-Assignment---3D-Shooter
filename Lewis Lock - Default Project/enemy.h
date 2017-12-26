@@ -58,7 +58,7 @@ public:
 			bullets[x]->getSceneNode()->SetBelongsToEnemy(true);
 		}
 
-		particleGenerator = new ParticleGenerator(particles_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox);
+		particleGenerator = new ParticleGenerator(30,particles_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox);
 
 
 	};

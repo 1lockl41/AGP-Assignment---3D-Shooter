@@ -21,7 +21,7 @@ level::level(bool isSkybox, int levelSizeX, int levelSizeZ, Scene_node* root_nod
 		for (int j = 0; j < m_levelSizeZ; j++)
 		{
 			//add floor wall block to z axis 
-			vec.push_back(new wall(isSkybox,i * 4, -6, j * 4, floor_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox));
+			vec.push_back(new wall(isSkybox,i * 8, -8, j * 8, floor_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox));
 			vec2.push_back(0);
 		}
 		m_levelFloorVector2D.push_back(vec); //push back x axis of vector with the temp z axis vector
@@ -68,7 +68,13 @@ void level::InitialiseLevelWalls()
 		}
 	}
 
-	//m_levelWallsVector2D[10][10] = 1;
+
+	m_levelWallsVector2D[6][6] = 1;
+	m_levelWallsVector2D[6][7] = 1;
+	m_levelWallsVector2D[6][8] = 1;
+
+	m_levelWallsVector2D[5][6] = 1;
+	m_levelWallsVector2D[7][6] = 1;
 }
 
 void level::SetupLevelWalls(bool isSkybox, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
@@ -80,9 +86,9 @@ void level::SetupLevelWalls(bool isSkybox, char* modelFilename, char* textureFil
 		{
 			if (m_levelWallsVector2D[i][j] == 1)
 			{
-				wall* tempWall = new wall(isSkybox, i * 4, -2, j * 4, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
+				wall* tempWall = new wall(isSkybox, i * 8, 0, j * 8, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
 				//wall* tempWall2 = new wall(isSkybox, i * 2, 0, j * 2, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
-				tempWall->getSceneNode()->SetScale(2);
+				tempWall->getSceneNode()->SetScale(4);
 			}
 
 		}

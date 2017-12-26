@@ -8,11 +8,11 @@
 #include <ctime>
 
 
-ParticleGenerator::ParticleGenerator(Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
+ParticleGenerator::ParticleGenerator(int numberOfParticles, Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
 {
 	srand(static_cast <unsigned> (time(0)));
 
-	for (int i = 0; i < 30; i++)
+	for (int i = 0; i < numberOfParticles; i++)
 	{
 		particles.push_back(new Particle(false, -100, -100, root_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox));
 

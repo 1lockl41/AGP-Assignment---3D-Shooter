@@ -256,7 +256,6 @@ HRESULT game::InitialiseGraphics()//03 - 01
 
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSolid);
 	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	depthDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSkybox);
 
 	g_floor_node->addChildNode(g_actors_node);
@@ -264,13 +263,13 @@ HRESULT game::InitialiseGraphics()//03 - 01
 
 	level1 = new level(false, 12, 12, g_walls_node, g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
-	player1 = new player(false, 20, 0, 20, g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	player1 = new player(false, 12, 0, 12, g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	AImanager1 = new AImanager(4, g_actors_node, g_floor_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	skyBox = new wall(true, 20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
-	skyBox->setScale(50);
+	skyBox->setScale(42);
+	g_sky_node->SetXPos(24);
+	g_sky_node->SetZPos(24);
 	skyBox->getModel()->SetIsSkybox(true);
-
-	//ParticleGenerator1 = new ParticleGenerator(g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
 	return S_OK;
 }
