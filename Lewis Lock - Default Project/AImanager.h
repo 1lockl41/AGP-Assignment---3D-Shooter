@@ -19,14 +19,20 @@ private:
 	int m_numberOfEnemies;
 	std::vector<enemy*> enemies;
 
+	float spawnEnemyCooldown;
+	float spawnEnemyCooldownReset;
+	int currentSpawnLoop;
+
 
 
 public:
-	AImanager(int numberOfEnemies, Scene_node* actors_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWriteSkybox);
+	AImanager(int numberOfEnemies, Scene_node* actors_node, Scene_node* particles_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWriteSkybox);
 	std::vector<enemy*> GetEnemies();
 	std::vector<bullet*> GetAllBullets();
 
 	void UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actors_node, float x_lookAt, float y_lookAt, Scene_node* walls_node, player* player1);
+
+	void CheckSpawnEnemies();
 
 
 

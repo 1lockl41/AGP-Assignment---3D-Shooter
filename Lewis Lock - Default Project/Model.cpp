@@ -188,7 +188,7 @@ void Model::Draw(XMMATRIX *world, XMMATRIX* view, XMMATRIX* projection, XMVECTOR
 	if (m_isSkybox)
 	{
 		m_pImmediateContext->RSSetState(m_pRasterSkybox);
-		m_pImmediateContext->OMSetDepthStencilState(m_pDepthWriteSkybox,1.0);
+		m_pImmediateContext->OMSetDepthStencilState(m_pDepthWriteSkybox,0.0);
 		m_pObject->Draw();
 		m_pImmediateContext->RSSetState(m_pRasterSolid);
 		m_pImmediateContext->OMSetDepthStencilState(m_pDepthWriteSolid,1.0);

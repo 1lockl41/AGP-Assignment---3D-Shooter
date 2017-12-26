@@ -54,6 +54,8 @@ bool enemy::CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* roo
 
 void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt, player* player1)
 {
+	particleGenerator->UpdateParticles();
+
 	if (m_active)
 	{
 		m_damageTakenCooldown--;
@@ -77,6 +79,9 @@ void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, flo
 
 				if (m_currHealth <= 0)
 				{
+					particleGenerator->SetPosition(m_xPos, m_yPos, m_zPos);
+					particleGenerator->SpawnParticles();
+
 					m_active = false;
 					setXPos(-100);
 					setYPos(-100);
@@ -140,4 +145,17 @@ void enemy::CheckFiring(float x_lookAt, float y_lookAt)
 std::vector<bullet*> enemy::GetBullets()
 {
 	return bullets;
+}
+
+void enemy::SetActive(float xPos, float yPos, float zPos)
+{
+	m_active = true;
+	setXPos(xPos);
+	setYPos(yPos);
+	setZPos(zPos);
+}
+
+bool enemy::IsActive()
+{
+	return m_active;
 }

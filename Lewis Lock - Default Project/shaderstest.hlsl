@@ -1,44 +1,42 @@
-Texture2D texture0;
-SamplerState sampler0;
-
-cbuffer CBuffer0
+cbuffer CB0
 {
-	matrix WVPMatrix; //64 bytes
+	matrix WorldViewMatrix; //64 bytes
 	float red_fraction; // 4 bytes
 	float scale; //4 bytes
 	float2 packing; //2x4 bytes
-	float4 directional_light_vector; //16 bytes
-	float4 directional_light_colour; //16 bytes
-	float4 ambient_light_colour; //16 bytes
-}; //128 bytes
+}; //80 bytes
 
+TextureCube cube0;
+SamplerState sampler0;
 
 struct VOut
 {
 	float4 position : SV_POSITION;
 	float4 color : COLOR;
-	float2 texcoord : TEXCOORD;
+	float3 texcoord : TEXCOORD;
 };
 
-VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD, float3 normal : NORMAL)
+VOut ModelVS(float4 position : POSITION, float3 texcoord : TEXCOORD, float3 normal : NORMAL)
 {
 	VOut output;
 
-	//color.r = red_fraction;
-	//output.position = position;
-	output.position = mul(WVPMatrix, position);
-	output.color = color;
-	output.position.xy *= scale;
-	output.texcoord = texcoord;
+	//position relative to camera
+	float3 wvpos = mul(WorldViewMatrix, position);
 
-	float diffuse_amount = dot(directional_light_vector, normal);
-	diffuse_amount = saturate(diffuse_amount);
-	output.color = ambient_light_colour + (directional_light_colour * diffuse_amount);
+	//surface normal relative to camera
+	float3 wvnormal = mul(WorldViewMatrix, normal);
+	wvnormal = normalize(wvnormal);
+
+	//obtain the reverse eye vector
+	float3 eyer = -normalize(wvpos);
+
+	//compute the reflection vector
+	output.texcoord = 2.0 * dot(eyer, wvnormal) * wvnormal - eyer;
 
 	return output;
 }
 
-float4 PShader(float4 position : SV_POSITION, float4 color :COLOR, float2 texcoord : TEXCOORD, float3 normal : NORMAL) : SV_TARGET
+float4 ModelPS(float4 position : SV_POSITION, float4 color : COLOR, float3 texcoord : TEXCOORD) : SV_TARGET
 {
-	return color * texture0.Sample(sampler0, texcoord);
+	return cube0.Sample(sampler0, texcoord) * color;
 }

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "AImanager.h"
 
-AImanager::AImanager(int numberOfEnemies, Scene_node* actors_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWriteSkybox)
+AImanager::AImanager(int numberOfEnemies, Scene_node* actors_node, Scene_node* particles_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWriteSkybox)
 {
 	m_numberOfEnemies = numberOfEnemies;
 
@@ -14,9 +14,10 @@ AImanager::AImanager(int numberOfEnemies, Scene_node* actors_node, char* bulletM
 	m_SpawnPoint3 = XMVectorSet(32.0, 0.0, 6.0, 0.0);
 	m_SpawnPoint4 = XMVectorSet(32.0, 0.0, 32.0, 0.0);
 
+	spawnEnemyCooldownReset = 200;
+	spawnEnemyCooldown = spawnEnemyCooldownReset;
 
 	XMVECTOR currentSpawnPoint = XMVectorZero();
-	int currentSpawnLoop = 0;
 
 	for (int i = 0; i < numberOfEnemies; i++)
 	{
@@ -42,7 +43,7 @@ AImanager::AImanager(int numberOfEnemies, Scene_node* actors_node, char* bulletM
 		}
 
 
-		enemies.push_back(new enemy(false, XMVectorGetX(currentSpawnPoint), XMVectorGetY(currentSpawnPoint), XMVectorGetZ(currentSpawnPoint), actors_node, bulletModelFileName, bulletTextureFileName, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox));
+		enemies.push_back(new enemy(false, XMVectorGetX(currentSpawnPoint), XMVectorGetY(currentSpawnPoint), XMVectorGetZ(currentSpawnPoint), actors_node, particles_node, bulletModelFileName, bulletTextureFileName, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox));
 	}
 
 }
@@ -77,4 +78,56 @@ void AImanager::UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actor
 		enemies[i]->UpdateEnemy(bullets, actors_node, x_lookAt, y_lookAt, player1);
 
 	}
+}
+
+void AImanager::CheckSpawnEnemies()
+{
+	spawnEnemyCooldown--;
+	if (spawnEnemyCooldown < 0)
+		spawnEnemyCooldown = 0;
+
+	if (spawnEnemyCooldown == 0)
+	{
+		bool hasSpawned = false;
+
+		XMVECTOR currentSpawnPoint = XMVectorZero();
+	
+		if (currentSpawnLoop == 0)
+		{
+			currentSpawnPoint = m_SpawnPoint1;
+			currentSpawnLoop = 1;
+		}
+		else if (currentSpawnLoop == 1)
+		{
+			currentSpawnPoint = m_SpawnPoint2;
+			currentSpawnLoop = 2;
+		}
+		else if (currentSpawnLoop == 2)
+		{
+			currentSpawnPoint = m_SpawnPoint3;
+			currentSpawnLoop = 3;
+		}
+		else if (currentSpawnLoop == 3)
+		{
+			currentSpawnPoint = m_SpawnPoint4;
+			currentSpawnLoop = 0;
+		}
+
+		for (int i = 0; i < enemies.size(); i++)
+		{
+			if (!enemies[i]->IsActive() && !hasSpawned)
+			{
+				enemies[i]->SetActive(XMVectorGetX(currentSpawnPoint), XMVectorGetY(currentSpawnPoint), XMVectorGetZ(currentSpawnPoint));
+				hasSpawned = true;
+			}
+
+		}
+
+
+		spawnEnemyCooldown = spawnEnemyCooldownReset;
+	}
+
+
+
+
 }

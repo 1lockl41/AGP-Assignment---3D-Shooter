@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include "game.h"
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////////
 //Called every time the application recives a message
 //////////////////////////////////////////////////////////////////////////////////
@@ -236,7 +234,6 @@ HRESULT game::InitialiseGraphics()//03 - 01
 
 	/////////////////SKY BOX///////////////////
 	g_pD3DDevice->CreateRasterizerState(&rasterDesc, &g_pRasterSolid);
-
 	rasterDesc.CullMode = D3D11_CULL_FRONT;
 	g_pD3DDevice->CreateRasterizerState(&rasterDesc, &g_pRasterSkybox);
 
@@ -259,20 +256,21 @@ HRESULT game::InitialiseGraphics()//03 - 01
 
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSolid);
 	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	depthDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSkybox);
 
-
-	g_sky_node->addChildNode(g_floor_node);
 	g_floor_node->addChildNode(g_actors_node);
 	g_actors_node->addChildNode(g_walls_node);
 
-	level1 = new level(false, 20, 20, g_walls_node, g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	level1 = new level(false, 12, 12, g_walls_node, g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
 	player1 = new player(false, 20, 0, 20, g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
-	AImanager1 = new AImanager(4, g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	AImanager1 = new AImanager(4, g_actors_node, g_floor_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	skyBox = new wall(true, 20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	skyBox->setScale(50);
 	skyBox->getModel()->SetIsSkybox(true);
+
+	//ParticleGenerator1 = new ParticleGenerator(g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
 	return S_OK;
 }
@@ -304,9 +302,14 @@ void game::RenderFrame(void)
 
 	player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node);
 
+	AImanager1->CheckSpawnEnemies();
 	AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node, player1);
 
+	//g_sky_node->SetXPos(player1->getXPos());
+	//g_sky_node->SetZPos(player1->getZPos());
 	g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
+	g_floor_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
+
 
 	string scoreString = string("Score ") + to_string(player1->GetPlayerScore());
 

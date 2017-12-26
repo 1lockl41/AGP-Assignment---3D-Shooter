@@ -16,6 +16,7 @@
 #include "level.h"
 #include "wall.h"
 #include "AImanager.h"
+#include "ParticleGenerator.h"
 #include <dinput.h>
 
 class game
@@ -51,9 +52,9 @@ private:
 
 	InputManager* inputManager;
 
-	Scene_node* g_sky_node;  //The root node, contains only the sky box. All collisions ignore this.
-	Scene_node* g_floor_node; //The second node in the tree, contains the floor. All collisions currently ignore this, as there is no gravity.
-	Scene_node* g_actors_node; //The third node in the tree, contains all moving actors such as players, enemies and bullets. Player and enemy movement will use this for collision so they dont move through each other.
+	Scene_node* g_sky_node;  //A seperate node, contains only the sky box. All collisions ignore this.
+	Scene_node* g_floor_node; //The root node in the tree, contains the floor. All collisions currently ignore this, as there is no gravity.
+	Scene_node* g_actors_node; //The second node in the tree, contains all moving actors such as players, enemies and bullets. Player and enemy movement will use this for collision so they dont move through each other.
 	Scene_node* g_walls_node; //The last node in the last, contains the walls for the level. Bullets will use this for collision so they are destroyed when hitting a wall.
 
 	level* level1;
@@ -61,6 +62,7 @@ private:
 
 	player* player1;
 	AImanager* AImanager1;
+	//ParticleGenerator* ParticleGenerator1;
 
 public:
 

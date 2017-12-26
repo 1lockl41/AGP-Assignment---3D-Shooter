@@ -21,8 +21,7 @@ level::level(bool isSkybox, int levelSizeX, int levelSizeZ, Scene_node* root_nod
 		for (int j = 0; j < m_levelSizeZ; j++)
 		{
 			//add floor wall block to z axis 
-			vec.push_back(new wall(isSkybox,i * 2, -4, j * 2, floor_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox));
-
+			vec.push_back(new wall(isSkybox,i * 4, -6, j * 4, floor_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox));
 			vec2.push_back(0);
 		}
 		m_levelFloorVector2D.push_back(vec); //push back x axis of vector with the temp z axis vector
@@ -81,8 +80,9 @@ void level::SetupLevelWalls(bool isSkybox, char* modelFilename, char* textureFil
 		{
 			if (m_levelWallsVector2D[i][j] == 1)
 			{
-				wall* tempWall = new wall(isSkybox, i * 2, -2, j * 2, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
-				wall* tempWall2 = new wall(isSkybox, i * 2, 0, j * 2, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
+				wall* tempWall = new wall(isSkybox, i * 4, -2, j * 4, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
+				//wall* tempWall2 = new wall(isSkybox, i * 2, 0, j * 2, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
+				tempWall->getSceneNode()->SetScale(2);
 			}
 
 		}

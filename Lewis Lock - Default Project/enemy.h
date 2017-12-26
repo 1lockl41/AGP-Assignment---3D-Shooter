@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "baseClass.h"
 #include "player.h"
+#include "ParticleGenerator.h"
 
 class enemy : public baseClass
 {
@@ -23,15 +24,17 @@ private:
 
 	XMVECTOR m_dir;
 
+	ParticleGenerator* particleGenerator;
+
 public:
 
-	enemy(bool isSkybox, int xPos, int yPos, int zPos, Scene_node* actors_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWriteSkybox) : baseClass(isSkybox, xPos, yPos, zPos,modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox)
+	enemy(bool isSkybox, int xPos, int yPos, int zPos, Scene_node* actors_node, Scene_node* particles_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWriteSkybox) : baseClass(isSkybox, xPos, yPos, zPos,modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox)
 	{
 
 		m_firingCooldownReset = 45;
 		m_firingCooldown = m_firingCooldownReset;
-		m_speed = 0.1f;
-		m_active = true;
+		m_speed = 0.05f;
+		m_active = false;
 
 		m_maxHealth = 30;
 		m_currHealth = m_maxHealth;
@@ -55,6 +58,8 @@ public:
 			bullets[x]->getSceneNode()->SetBelongsToEnemy(true);
 		}
 
+		particleGenerator = new ParticleGenerator(particles_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox);
+
 
 	};
 
@@ -65,4 +70,7 @@ public:
 	void CheckFiring(float x_lookAt, float y_lookAt);
 
 	std::vector<bullet*> GetBullets();
+
+	void SetActive(float xPos, float yPos, float zPos);
+	bool IsActive();
 };
