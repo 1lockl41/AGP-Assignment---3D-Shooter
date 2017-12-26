@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "InputManager.h"
 #include "bullet.h"
+#include "pickupHealth.h"
 
 
 class player : public baseClass
@@ -79,4 +80,7 @@ public:
 
 	void AddPlayerScore(int addScore);
 	int GetPlayerScore();
+	int GetPlayerHealth();
+
+	void CheckHealthKitCollision(pickupHealth* healthKit);
 };

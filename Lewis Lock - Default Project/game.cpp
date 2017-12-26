@@ -186,7 +186,6 @@ HRESULT game::InitialiseD3D()
 
 		//Set the viewport
 		D3D11_VIEWPORT viewport;
-
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
 		viewport.Width = width;
@@ -222,6 +221,7 @@ HRESULT game::InitialiseGraphics()//03 - 01
 {
 	HRESULT hr = S_OK;
 
+	//Initialise scene nodes
 	g_walls_node = new Scene_node();
 	g_sky_node = new Scene_node();
 	g_floor_node = new Scene_node();
@@ -236,7 +236,6 @@ HRESULT game::InitialiseGraphics()//03 - 01
 	g_pD3DDevice->CreateRasterizerState(&rasterDesc, &g_pRasterSolid);
 	rasterDesc.CullMode = D3D11_CULL_FRONT;
 	g_pD3DDevice->CreateRasterizerState(&rasterDesc, &g_pRasterSkybox);
-
 
 	D3D11_DEPTH_STENCIL_DESC depthDesc;
 	depthDesc.DepthEnable = true;
@@ -257,11 +256,15 @@ HRESULT game::InitialiseGraphics()//03 - 01
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSolid);
 	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSkybox);
+	///////////////////////////////////////////
 
 	g_floor_node->addChildNode(g_actors_node);
 	g_actors_node->addChildNode(g_walls_node);
 
-	level1 = new level(false, 12, 12, g_walls_node, g_floor_node, "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	level1 = new level(false, 12, 12, g_walls_node, g_floor_node,"Assets/cube.obj","Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+
+	healthKit1 = new pickupHealth(20, 0, 30, g_actors_node,"Assets/cube.obj","Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	healthKit1->Spawn();
 
 	player1 = new player(false, 12, 0, 12, g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	AImanager1 = new AImanager(4, g_actors_node, g_floor_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
@@ -279,41 +282,42 @@ HRESULT game::InitialiseGraphics()//03 - 01
 /////////////////////////////////////////////////////////////////////////
 void game::RenderFrame(void)
 {
-	inputManager->ReadInputStates();
-	if (inputManager->IsKeyPressed(DIK_ESCAPE)) DestroyWindow(g_hWnd);
+	inputManager->ReadInputStates(); //Update input manager
+	if (inputManager->IsKeyPressed(DIK_ESCAPE)) DestroyWindow(g_hWnd); //if escape is pressed, end game
 
-	//Clear the back buffer - choose a colour you like
+	//Clear the back buffer
 	float rgba_clear_colour[4] = { 0.1f, 0.2f,0.6f,1.0f };
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
 	g_pImmediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	//Set lighting
 	g_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	g_directional_light_colour = XMVectorSet(0.4f, 0.4f, 0.4f, 0.0f);
 	g_ambient_light_colour = XMVectorSet(0.8f, 0.8f, 0.8f, 0.0f);
 
 	XMMATRIX view = player1->getCamera()->GetViewMatrix();
-
-	///////////RENDER FIRST CUBE////////////////////
 	XMMATRIX projection;
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), 640.0 / 480.0, 1.0, 100.0);
-
 	XMMATRIX identityMatrix = XMMatrixIdentity();
 
-	player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node);
+	player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node); //Read players input, update player position, and player's bullets positions
+	player1->CheckHealthKitCollision(healthKit1); //check if player has collided with health kit, should put into above update function
 
-	AImanager1->CheckSpawnEnemies();
-	AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node, player1);
+	AImanager1->CheckSpawnEnemies(); //check if enemies should be spawned, spawning them if so
+	AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node, player1); //update all active enemies
 
+	healthKit1->Update(); //Update health kit, check if it should respawn or not
+
+	//Move sky node to players position, currently not used due to the skybox drawing above the rest of the game
 	//g_sky_node->SetXPos(player1->getXPos());
 	//g_sky_node->SetZPos(player1->getZPos());
-	g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
-	g_floor_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from);
 
+	g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from); //Draw skybox
+	g_floor_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from); //Draw everything else
 
-	string scoreString = string("Score ") + to_string(player1->GetPlayerScore());
-
+	//Display players score and health as HUD
+	string scoreString = string("Score:") + to_string(player1->GetPlayerScore()) + " Health:" + to_string(player1->GetPlayerHealth()); 
 	g_2DText->AddText(scoreString, -1.0, +1.0, .1);
-
 	g_2DText->RenderText();
 
 	//Display what has just been rendered

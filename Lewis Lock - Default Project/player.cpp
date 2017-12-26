@@ -261,3 +261,44 @@ int player::GetPlayerScore()
 {
 	return m_playerScore;
 }
+
+int player::GetPlayerHealth()
+{
+	return m_currHealth;
+}
+
+void player::CheckHealthKitCollision(pickupHealth* healthKit)
+{
+
+	if (healthKit->IsActive())
+	{
+		//only check for collisions if both nodes contain a model
+		if (this->getModel() && healthKit->getModel())
+		{
+			XMVECTOR v1 = this->getSceneNode()->GetWorldCentrePosition();
+			XMVECTOR v2 = healthKit->getSceneNode()->GetWorldCentrePosition();
+			XMVECTOR vdiff = v1 - v2;
+
+			XMVECTOR a = XMVector3Length(vdiff);
+			float x1 = XMVectorGetX(v1);
+			float x2 = XMVectorGetX(v2);
+			float y1 = XMVectorGetY(v1);
+			float y2 = XMVectorGetY(v2);
+			float z1 = XMVectorGetZ(v1);
+			float z2 = XMVectorGetZ(v2);
+
+			float dx = x1 - x2;
+			float dy = y1 - y2;
+			float dz = z1 - z2;
+
+			//check bounding sphere collision
+			if (sqrt(dx*dx + dy*dy + dz*dz) < (healthKit->getModel()->GetBoundingSphereRadius() * healthKit->getSceneNode()->GetWorldScale()) + (this->getModel()->GetBoundingSphereRadius() * this->getSceneNode()->GetWorldScale()))
+			{
+				healthKit->OnPickUp();
+				m_currHealth += 10;
+			}
+		}
+	}
+
+
+}

@@ -17,6 +17,7 @@
 #include "wall.h"
 #include "AImanager.h"
 #include "ParticleGenerator.h"
+#include "pickupHealth.h"
 #include <dinput.h>
 
 class game
@@ -62,6 +63,7 @@ private:
 
 	player* player1;
 	AImanager* AImanager1;
+	pickupHealth* healthKit1;
 
 public:
 
