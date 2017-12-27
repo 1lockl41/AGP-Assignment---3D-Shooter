@@ -271,6 +271,8 @@ HRESULT game::InitialiseGraphics()//03 - 01
 
 	pushableBlock1 = new pushableBlock(28, -2, 16, g_walls_node, "Assets/cube.obj", "Assets/texture_pushableBlock.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
+	removeableWallsTrigger = new triggerPlate(28,-7.6, 72, g_floor_node, "Assets/cube.obj", "Assets/texture_pushableBlock.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+
 	player1 = new player(false, 12, 0, 20, g_actors_node, "Assets/PointySphere.obj", "Assets/texture_playerBullets.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	AImanager1 = new AImanager(4, g_actors_node, g_floor_node, "Assets/PointySphere.obj", "Assets/texture_enemyBullets.bmp", "Assets/cube.obj", "Assets/texture_enemy.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	skyBox = new wall(true, 20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
@@ -305,27 +307,45 @@ void game::RenderFrame(void)
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), 640.0 / 480.0, 1.0, 100.0);
 	XMMATRIX identityMatrix = XMMatrixIdentity();
 
-	player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node); //Read players input, update player position, and player's bullets positions
-	player1->CheckHealthKitCollision(healthKit1); //check if player has collided with health kit, should put into above update function
-	player1->CheckShotgunCollision(shotgun1);
-	player1->CheckPushableBlockCollision(pushableBlock1, g_actors_node);
 
-	AImanager1->CheckSpawnEnemies(); //check if enemies should be spawned, spawning them if so
-	AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node, player1); //update all active enemies
+	if (player1->IsActive())
+	{
 
-	healthKit1->Update(); //Update health kit, check if it should respawn or not
+		player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node); //Read players input, update player position, and player's bullets positions
+		player1->CheckHealthKitCollision(healthKit1); //check if player has collided with health kit, should put into above update function
+		player1->CheckShotgunCollision(shotgun1);
+		player1->CheckPushableBlockCollision(pushableBlock1, g_actors_node);
 
-	//Move sky node to players position, currently not used due to the skybox drawing above the rest of the game
-	//g_sky_node->SetXPos(player1->getXPos());
-	//g_sky_node->SetZPos(player1->getZPos());
+		AImanager1->CheckSpawnEnemies(); //check if enemies should be spawned, spawning them if so
+		AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node, player1); //update all active enemies
 
-	g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from); //Draw skybox
-	g_floor_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from); //Draw everything else
+		healthKit1->Update(); //Update health kit, check if it should respawn or not
 
-	//Display players score and health as HUD
-	string scoreString = string("Score:") + to_string(player1->GetPlayerScore()) + " Health:" + to_string(player1->GetPlayerHealth()); 
-	g_2DText->AddText(scoreString, -1.0, +1.0, .1);
-	g_2DText->RenderText();
+		//If pushable block has been moved over the trigger, then deactivate walls
+		//Only need to check z position as the block is locked to move just back and forward
+		if (pushableBlock1->CheckIfTriggered(removeableWallsTrigger->getZPos()))
+		{
+			level1->DeactivateRemoveableWalls();
+		}
+
+		//Move sky node to players position, currently not used due to the skybox drawing above the rest of the game
+		//g_sky_node->SetXPos(player1->getXPos());
+		//g_sky_node->SetZPos(player1->getZPos());
+
+		g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from); //Draw skybox
+		g_floor_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from); //Draw everything else
+
+		//Display players score and health as HUD
+		string scoreString = string("Score:") + to_string(player1->GetPlayerScore()) + " Health:" + to_string(player1->GetPlayerHealth());
+		g_2DText->AddText(scoreString, -1.0, +1.0, .1);
+		g_2DText->RenderText();
+	}
+	else
+	{
+		g_2DText->AddText("GAME OVER", -0.5, 0.0, .1);
+		g_2DText->RenderText();
+
+	}
 
 	//Display what has just been rendered
 	g_pSwapChain->Present(0, 0);

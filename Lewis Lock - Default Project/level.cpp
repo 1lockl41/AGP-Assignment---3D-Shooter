@@ -75,6 +75,13 @@ void level::InitialiseLevelWalls()
 
 	m_levelWallsVector2D[5][6] = 1;
 	m_levelWallsVector2D[7][6] = 1;
+
+	m_levelWallsVector2D[6][9] = 2;
+	m_levelWallsVector2D[6][10] = 2;
+	m_levelWallsVector2D[7][6] = 2;
+	m_levelWallsVector2D[8][6] = 2;
+	m_levelWallsVector2D[9][6] = 2;
+	m_levelWallsVector2D[10][6] = 2;
 }
 
 void level::SetupLevelWalls(bool isSkybox, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
@@ -87,12 +94,32 @@ void level::SetupLevelWalls(bool isSkybox, char* modelFilename, char* textureFil
 			if (m_levelWallsVector2D[i][j] == 1)
 			{
 				wall* tempWall = new wall(isSkybox, i * 8, 0, j * 8, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
-				//wall* tempWall2 = new wall(isSkybox, i * 2, 0, j * 2, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
 				tempWall->getSceneNode()->SetScale(4);
+			}
+			else if (m_levelWallsVector2D[i][j] == 2)
+			{
+				wall* tempWall = new wall(isSkybox, i * 8, -4, j * 8, m_level_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
+				tempWall->getSceneNode()->SetScale(4);
+				m_removableWalls.push_back(tempWall);
 			}
 
 		}
 	}
+}
 
+void level::UpdateRemoveableWalls()
+{
+	for (int i = 0; i < m_removableWalls.size(); i++)
+	{
+		m_removableWalls[i]->Update();
+	}
+}
 
+void level::DeactivateRemoveableWalls()
+{
+	for (int i = 0; i < m_removableWalls.size(); i++)
+	{
+		m_removableWalls[i]->SetActive(false);
+		m_removableWalls[i]->setXPos(100);
+	}
 }

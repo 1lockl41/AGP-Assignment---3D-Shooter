@@ -31,7 +31,7 @@ public:
 	enemy(bool isSkybox, int xPos, int yPos, int zPos, Scene_node* actors_node, Scene_node* particles_node, char* bulletModelFileName, char* bulletTextureFileName, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWriteSkybox) : baseClass(isSkybox, xPos, yPos, zPos,modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWriteSkybox)
 	{
 
-		m_firingCooldownReset = 45;
+		m_firingCooldownReset = 60;
 		m_firingCooldown = m_firingCooldownReset;
 		m_speed = 0.05f;
 		m_active = false;

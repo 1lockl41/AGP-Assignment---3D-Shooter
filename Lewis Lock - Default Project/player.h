@@ -58,6 +58,8 @@ public:
 
 		m_shotgunPowerUp = false;
 
+		m_active = true;
+
 		//m_sceneNode->SetScale(2);
 		actors_node->addChildNode(m_sceneNode);
 
@@ -91,4 +93,6 @@ public:
 	void CheckHealthKitCollision(pickupHealth* healthKit);
 	void CheckShotgunCollision(pickupShotgun* shotgun);
 	void CheckPushableBlockCollision(pushableBlock* pushBlock, Scene_node* walls_node);
+
+	bool IsActive();
 };

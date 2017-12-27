@@ -248,6 +248,7 @@ void player::UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, s
 				if (m_currHealth <= 0)
 				{
 					m_currHealth = 0;
+					m_active = false;
 				}
 			}
 		}
@@ -364,6 +365,9 @@ void player::CheckShotgunCollision(pickupShotgun* shotgun)
 			m_shotgunPowerUp = true;
 		}
 	}
+}
 
-
+bool player::IsActive()
+{
+	return m_active;
 }

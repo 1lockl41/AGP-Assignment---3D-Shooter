@@ -9,9 +9,9 @@
 class wall : public baseClass
 {
 private:
-
-
-
+	float m_xSpawn;
+	float m_ySpawn;
+	float m_zSpawn;
 
 public:
 
@@ -20,11 +20,14 @@ public:
 		m_sceneNode->SetModel(m_model);
 		m_sceneNode->SetScale(4);
 		root_node->addChildNode(m_sceneNode);
+		m_active = true;
+
+		m_xSpawn = xPos;
+		m_ySpawn = yPos;
+		m_zSpawn = zPos;
 
 	};
 
-
-
-
-
+	void SetActive(bool active);
+	void Update();
 };

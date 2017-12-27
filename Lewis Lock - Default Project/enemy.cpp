@@ -114,7 +114,6 @@ void enemy::MoveTowards(Scene_node* root_node, float x_lookAt, float y_lookAt)
 
 	setXPos(m_sceneNode->GetXPos());
 	setZPos(m_sceneNode->GetZPos());
-
 }
 
 

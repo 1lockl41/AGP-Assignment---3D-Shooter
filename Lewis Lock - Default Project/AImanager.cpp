@@ -9,12 +9,12 @@ AImanager::AImanager(int numberOfEnemies, Scene_node* actors_node, Scene_node* p
 {
 	m_numberOfEnemies = numberOfEnemies;
 
-	m_SpawnPoint1 = XMVectorSet(12.0, 0.0, 12.0, 0.0);
-	m_SpawnPoint2 = XMVectorSet(12.0, 0.0, 64.0, 0.0);
+	m_SpawnPoint1 = XMVectorSet(12.0, 0.0, 64.0, 0.0);
+	m_SpawnPoint2 = XMVectorSet(12.0, 0.0, 12.0, 0.0);
 	m_SpawnPoint3 = XMVectorSet(64.0, 0.0, 12.0, 0.0);
-	m_SpawnPoint4 = XMVectorSet(64.0, 0.0, 64.0, 0.0);
+	m_SpawnPoint4 = XMVectorSet(72.0, 0.0, 64.0, 0.0);
 
-	spawnEnemyCooldownReset = 200;
+	spawnEnemyCooldownReset = 350;
 	spawnEnemyCooldown = spawnEnemyCooldownReset;
 
 	XMVECTOR currentSpawnPoint = XMVectorZero();
@@ -122,6 +122,10 @@ void AImanager::CheckSpawnEnemies()
 
 		}
 
+		//Gradually reduce the reset time, so enemies spawn quicker as the game progresses
+		spawnEnemyCooldownReset -= 10;
+		if (spawnEnemyCooldownReset < 100)
+			spawnEnemyCooldownReset = 100;
 
 		spawnEnemyCooldown = spawnEnemyCooldownReset;
 	}

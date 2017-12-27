@@ -18,3 +18,16 @@ void pushableBlock::MoveAwayFrom(float x_lookAt, float z_lookAt, Scene_node* roo
 	setZPos(m_sceneNode->GetZPos());
 
 }
+
+bool pushableBlock::CheckIfTriggered(float zPos)
+{
+	if (getZPos() > zPos)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}

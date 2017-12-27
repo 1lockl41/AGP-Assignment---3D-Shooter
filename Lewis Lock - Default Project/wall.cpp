@@ -5,3 +5,20 @@
 #include <stdio.h>
 #include "wall.h"
 
+void wall::SetActive(bool active)
+{
+	m_active = active;
+
+}
+
+void wall::Update()
+{
+	if (!m_active)
+	{
+		setXPos(-100);
+		setYPos(-100);
+		setZPos(-100);
+	}
+
+
+}

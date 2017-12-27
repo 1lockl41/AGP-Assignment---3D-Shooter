@@ -26,5 +26,6 @@ public:
 	}
 
 	void MoveAwayFrom(float x_lookAt, float z_lookAt, Scene_node* root_node);
+	bool CheckIfTriggered(float zPos);
 
 };

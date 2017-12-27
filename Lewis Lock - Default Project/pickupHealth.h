@@ -27,7 +27,7 @@ public:
 		m_spawnY = spawnY;
 		m_spawnZ = spawnZ;
 
-		spawnTimerReset = 600;
+		spawnTimerReset = 1000;
 		spawnTimer = spawnTimerReset;
 
 		m_active = false;
