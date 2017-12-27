@@ -38,7 +38,7 @@ public:
 		m_speed = 0.25;
 		m_active = false;
 
-		m_activeTimeReset = 200;
+		m_activeTimeReset = 300;
 		m_activeTime = m_activeTimeReset;
 		m_damage = 10;
 

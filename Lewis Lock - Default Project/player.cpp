@@ -35,7 +35,7 @@ void player::RotateCamera(InputManager* inputManager)
 	if ((inputManager->GetMouseState().lX != inputManager->GetLastMouseState().lX) || (inputManager->GetMouseState().lY != inputManager->GetLastMouseState().lY))
 	{
 		getCamera()->Yaw(inputManager->GetMouseState().lX * 0.001f);
-		getCamera()->Pitch(inputManager->GetMouseState().lY * 0.001f);
+		//getCamera()->Pitch(inputManager->GetMouseState().lY * 0.001f);
 
 		inputManager->SetLastMouseState(inputManager->GetMouseState());
 	}
@@ -164,6 +164,11 @@ void player::CheckFiring(InputManager* inputManager)
 			if (!bullets[x]->IsActive() && loop)
 			{
 				bullets[x]->SetActive(m_xPos, m_yPos, m_zPos, m_playerCamera->GetRotationDX(), m_playerCamera->GetRotationDZ());
+				if (m_shotgunPowerUp)
+				{
+					bullets[x + 1]->SetActive(m_xPos, m_yPos, m_zPos, m_playerCamera->GetRotationDX(), m_playerCamera->GetRotationDZ() + 0.2);
+					bullets[x + 2]->SetActive(m_xPos, m_yPos, m_zPos, m_playerCamera->GetRotationDX(), m_playerCamera->GetRotationDZ() - 0.2);
+				}
 				firingCooldown = firingCooldownReset;
 				loop = false;
 			}
@@ -242,7 +247,7 @@ void player::UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, s
 
 				if (m_currHealth <= 0)
 				{
-
+					m_currHealth = 0;
 				}
 			}
 		}
@@ -297,6 +302,66 @@ void player::CheckHealthKitCollision(pickupHealth* healthKit)
 				healthKit->OnPickUp();
 				m_currHealth += 10;
 			}
+		}
+	}
+}
+
+
+void player::CheckPushableBlockCollision(pushableBlock* pushBlock, Scene_node* walls_node)
+{
+	//only check for collisions if both nodes contain a model
+	if (this->getModel() && pushBlock->getModel())
+	{
+		XMVECTOR v1 = this->getSceneNode()->GetWorldCentrePosition();
+		XMVECTOR v2 = pushBlock->getSceneNode()->GetWorldCentrePosition();
+		XMVECTOR vdiff = v1 - v2;
+
+		XMVECTOR a = XMVector3Length(vdiff);
+		float x1 = XMVectorGetX(v1);
+		float x2 = XMVectorGetX(v2);
+		float y1 = XMVectorGetY(v1);
+		float y2 = XMVectorGetY(v2);
+		float z1 = XMVectorGetZ(v1);
+		float z2 = XMVectorGetZ(v2);
+
+		float dx = x1 - x2;
+		float dy = y1 - y2;
+		float dz = z1 - z2;
+
+		//check bounding sphere collision
+		if (sqrt(dx*dx + dy*dy + dz*dz) < (pushBlock->getModel()->GetBoundingSphereRadius() * pushBlock->getSceneNode()->GetWorldScale()) + (this->getModel()->GetBoundingSphereRadius() * this->getSceneNode()->GetWorldScale()))
+		{
+			pushBlock->MoveAwayFrom(m_xPos, m_zPos, walls_node);
+		}
+	}
+}
+
+void player::CheckShotgunCollision(pickupShotgun* shotgun)
+{
+	//only check for collisions if both nodes contain a model
+	if (this->getModel() && shotgun->getModel())
+	{
+		XMVECTOR v1 = this->getSceneNode()->GetWorldCentrePosition();
+		XMVECTOR v2 = shotgun->getSceneNode()->GetWorldCentrePosition();
+		XMVECTOR vdiff = v1 - v2;
+
+		XMVECTOR a = XMVector3Length(vdiff);
+		float x1 = XMVectorGetX(v1);
+		float x2 = XMVectorGetX(v2);
+		float y1 = XMVectorGetY(v1);
+		float y2 = XMVectorGetY(v2);
+		float z1 = XMVectorGetZ(v1);
+		float z2 = XMVectorGetZ(v2);
+
+		float dx = x1 - x2;
+		float dy = y1 - y2;
+		float dz = z1 - z2;
+
+		//check bounding sphere collision
+		if (sqrt(dx*dx + dy*dy + dz*dz) < (shotgun->getModel()->GetBoundingSphereRadius() * shotgun->getSceneNode()->GetWorldScale()) + (this->getModel()->GetBoundingSphereRadius() * this->getSceneNode()->GetWorldScale()))
+		{
+			shotgun->OnPickUp();
+			m_shotgunPowerUp = true;
 		}
 	}
 

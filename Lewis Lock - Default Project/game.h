@@ -18,6 +18,8 @@
 #include "AImanager.h"
 #include "ParticleGenerator.h"
 #include "pickupHealth.h"
+#include "pickupShotgun.h"
+#include "pushableBlock.h"
 #include <dinput.h>
 
 class game
@@ -64,6 +66,8 @@ private:
 	player* player1;
 	AImanager* AImanager1;
 	pickupHealth* healthKit1;
+	pickupShotgun* shotgun1;
+	pushableBlock* pushableBlock1;
 
 public:
 

@@ -137,7 +137,9 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="pickupHealth.cpp" />
+    <ClCompile Include="pickupShotgun.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="pushableBlock.cpp" />
     <ClCompile Include="scene_node.cpp" />
     <ClCompile Include="text2D.cpp" />
     <ClCompile Include="wall.cpp" />
@@ -156,7 +158,9 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="pickupHealth.h" />
+    <ClInclude Include="pickupShotgun.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="pushableBlock.h" />
     <ClInclude Include="scene_node.h" />
     <ClInclude Include="text2D.h" />
     <ClInclude Include="wall.h" />

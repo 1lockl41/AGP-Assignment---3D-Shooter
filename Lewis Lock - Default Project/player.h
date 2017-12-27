@@ -9,6 +9,8 @@
 #include "InputManager.h"
 #include "bullet.h"
 #include "pickupHealth.h"
+#include "pickupShotgun.h"
+#include "pushableBlock.h"
 
 
 class player : public baseClass
@@ -29,6 +31,8 @@ private:
 	float m_damageTakenCooldownReset;
 
 	int m_playerScore;
+
+	bool m_shotgunPowerUp;
 
 public:
 
@@ -51,6 +55,8 @@ public:
 		m_damageTaken = 0;
 		m_damageTakenCooldownReset = 20;
 		m_damageTakenCooldown = m_damageTakenCooldownReset;
+
+		m_shotgunPowerUp = false;
 
 		//m_sceneNode->SetScale(2);
 		actors_node->addChildNode(m_sceneNode);
@@ -83,4 +89,6 @@ public:
 	int GetPlayerHealth();
 
 	void CheckHealthKitCollision(pickupHealth* healthKit);
+	void CheckShotgunCollision(pickupShotgun* shotgun);
+	void CheckPushableBlockCollision(pushableBlock* pushBlock, Scene_node* walls_node);
 };

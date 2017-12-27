@@ -153,6 +153,7 @@ void enemy::SetActive(float xPos, float yPos, float zPos)
 	setXPos(xPos);
 	setYPos(yPos);
 	setZPos(zPos);
+	m_currHealth = m_maxHealth;
 }
 
 bool enemy::IsActive()

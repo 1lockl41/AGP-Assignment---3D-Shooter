@@ -261,13 +261,18 @@ HRESULT game::InitialiseGraphics()//03 - 01
 	g_floor_node->addChildNode(g_actors_node);
 	g_actors_node->addChildNode(g_walls_node);
 
-	level1 = new level(false, 12, 12, g_walls_node, g_floor_node,"Assets/cube.obj","Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	level1 = new level(false, 12, 12, g_walls_node, g_floor_node,"Assets/cube.obj","Assets/texture_wall1.bmp","Assets/texture_floor1.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
-	healthKit1 = new pickupHealth(20, 0, 30, g_actors_node,"Assets/cube.obj","Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	healthKit1 = new pickupHealth(47, 0, 35, g_actors_node,"Assets/cube.obj","Assets/texture_healthKit.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	healthKit1->Spawn();
 
-	player1 = new player(false, 12, 0, 12, g_actors_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
-	AImanager1 = new AImanager(4, g_actors_node, g_floor_node, "Assets/PointySphere.obj", "Assets/texture.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	shotgun1 = new pickupShotgun(75, 0, 75, g_actors_node, "Assets/cube.obj", "Assets/texture_shotgun.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	shotgun1->Spawn();
+
+	pushableBlock1 = new pushableBlock(28, -2, 16, g_walls_node, "Assets/cube.obj", "Assets/texture_pushableBlock.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+
+	player1 = new player(false, 12, 0, 20, g_actors_node, "Assets/PointySphere.obj", "Assets/texture_playerBullets.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	AImanager1 = new AImanager(4, g_actors_node, g_floor_node, "Assets/PointySphere.obj", "Assets/texture_enemyBullets.bmp", "Assets/cube.obj", "Assets/texture_enemy.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	skyBox = new wall(true, 20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	skyBox->setScale(42);
 	g_sky_node->SetXPos(24);
@@ -302,6 +307,8 @@ void game::RenderFrame(void)
 
 	player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node); //Read players input, update player position, and player's bullets positions
 	player1->CheckHealthKitCollision(healthKit1); //check if player has collided with health kit, should put into above update function
+	player1->CheckShotgunCollision(shotgun1);
+	player1->CheckPushableBlockCollision(pushableBlock1, g_actors_node);
 
 	AImanager1->CheckSpawnEnemies(); //check if enemies should be spawned, spawning them if so
 	AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node, player1); //update all active enemies
