@@ -24,7 +24,7 @@ private:
 
 	XMVECTOR m_dir;
 
-	ParticleGenerator* particleGenerator;
+	ParticleGenerator* particleGenerator = NULL;
 
 public:
 
@@ -33,7 +33,7 @@ public:
 
 		m_firingCooldownReset = 60;
 		m_firingCooldown = m_firingCooldownReset;
-		m_speed = 0.05f;
+		m_speed = 0.003f;
 		m_active = false;
 
 		m_maxHealth = 30;
@@ -63,11 +63,11 @@ public:
 
 	};
 
-	void UpdateBullets(Scene_node* root_node);
+	void UpdateBullets(Scene_node* root_node, double deltaTime);
 	bool CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* root_node);
-	void UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt, player* player1);
-	void MoveTowards(Scene_node* root_node, float x_lookAt, float y_lookAt);
-	void CheckFiring(float x_lookAt, float y_lookAt);
+	void UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt, player* player1, double deltaTime);
+	void MoveTowards(Scene_node* root_node, float x_lookAt, float z_lookAt, double deltaTime);
+	void CheckFiring(float x_lookAt, float y_lookAt, double deltaTime);
 
 	std::vector<bullet*> GetBullets();
 

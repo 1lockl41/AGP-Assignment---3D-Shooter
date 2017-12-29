@@ -42,12 +42,12 @@ void player::RotateCamera(InputManager* inputManager)
 	//////////////////////////////////////////////////
 }
 
-void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
+void player::MoveCamera(InputManager* inputManager, Scene_node* root_node, double deltaTime)
 {
 
 	if (inputManager->IsKeyPressed(DIK_W))
 	{
-		getCamera()->Forward(m_speed);
+		getCamera()->Forward((deltaTime*m_speed));
 
 		// set camera node to the position of the camera
 		setXPos(getCamera()->GetX());
@@ -62,16 +62,15 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Forward(-m_speed);
+			getCamera()->Forward(-(deltaTime*m_speed));
 			setXPos(getCamera()->GetX());
 			setYPos(getCamera()->GetY());
 			setZPos(getCamera()->GetZ());
-
 		}
 	}
 	if (inputManager->IsKeyPressed(DIK_S))
 	{
-		getCamera()->Forward(-m_speed);
+		getCamera()->Forward(-(deltaTime*m_speed));
 
 		// set camera node to the position of the camera
 		setXPos(getCamera()->GetX());
@@ -86,7 +85,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Forward(m_speed);
+			getCamera()->Forward((deltaTime*m_speed));
 			setXPos(getCamera()->GetX());
 			setYPos(getCamera()->GetY());
 			setZPos(getCamera()->GetZ());
@@ -94,7 +93,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 	}
 	if (inputManager->IsKeyPressed(DIK_A))
 	{
-		getCamera()->Sideways(-m_speed);
+		getCamera()->Sideways(-(deltaTime*m_speed));
 
 		// set camera node to the position of the camera
 		setXPos(getCamera()->GetX());
@@ -109,7 +108,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Sideways(m_speed);
+			getCamera()->Sideways((deltaTime*m_speed));
 			setXPos(getCamera()->GetX());
 			setYPos(getCamera()->GetY());
 			setZPos(getCamera()->GetZ());
@@ -117,7 +116,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 	}
 	if (inputManager->IsKeyPressed(DIK_D))
 	{
-		getCamera()->Sideways(m_speed);
+		getCamera()->Sideways((deltaTime*m_speed));
 
 		// set camera node to the position of the camera
 		setXPos(getCamera()->GetX());
@@ -132,7 +131,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 		if (m_sceneNode->check_collision(root_node, m_sceneNode) == true)
 		{
 			// if there is a collision, restore camera and camera node positions
-			getCamera()->Sideways(-m_speed);
+			getCamera()->Sideways(-(deltaTime*m_speed));
 			setXPos(getCamera()->GetX());
 			setYPos(getCamera()->GetY());
 			setZPos(getCamera()->GetZ());
@@ -140,18 +139,18 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node)
 	}
 }
 
-void player::UpdateBullets(Scene_node* root_node)
+void player::UpdateBullets(Scene_node* root_node, double deltaTime)
 {
 	for (int x = 0; x < bullets.size(); x++)
 	{
-		bullets[x]->UpdateBullet(root_node);
+		bullets[x]->UpdateBullet(root_node, deltaTime);
 	}
 }
 
-void player::CheckFiring(InputManager* inputManager)
+void player::CheckFiring(InputManager* inputManager, double deltaTime)
 {
 
-	firingCooldown--;
+	firingCooldown -= (deltaTime*0.05);
 	if (firingCooldown < 0)
 		firingCooldown = 0;
 
@@ -221,16 +220,16 @@ bool player::CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* ro
 	return false;
 }
 
-void player::UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, std::vector<bullet*> bullets, Scene_node* walls_node)
+void player::UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, std::vector<bullet*> bullets, Scene_node* walls_node, double deltaTime)
 {
 	if (m_active)
 	{
-		m_damageTakenCooldown--;
+		m_damageTakenCooldown -= (deltaTime * 0.05);
 
 		RotateCamera(inputManager);
-		MoveCamera(inputManager, actors_node);
-		CheckFiring(inputManager);
-		UpdateBullets(walls_node);
+		MoveCamera(inputManager, actors_node, deltaTime);
+		CheckFiring(inputManager, deltaTime);
+		UpdateBullets(walls_node, deltaTime);
 
 		if (m_sceneNode->check_collision(actors_node, m_sceneNode))
 		{
@@ -253,9 +252,6 @@ void player::UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, s
 			}
 		}
 	}
-
-
-
 }
 
 void player::AddPlayerScore(int addScore)

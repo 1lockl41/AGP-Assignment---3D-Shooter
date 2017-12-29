@@ -151,8 +151,5 @@
     <FxCompile Include="sky_shader.hlsl">
       <Filter>Header Files</Filter>
     </FxCompile>
-    <FxCompile Include="shaderstest.hlsl">
-      <Filter>Header Files</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

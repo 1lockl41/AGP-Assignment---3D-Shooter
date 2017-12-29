@@ -9,12 +9,14 @@ AImanager::AImanager(int numberOfEnemies, Scene_node* actors_node, Scene_node* p
 {
 	m_numberOfEnemies = numberOfEnemies;
 
+	currentSpawnLoop = 0;
+
 	m_SpawnPoint1 = XMVectorSet(12.0, 0.0, 64.0, 0.0);
 	m_SpawnPoint2 = XMVectorSet(12.0, 0.0, 12.0, 0.0);
 	m_SpawnPoint3 = XMVectorSet(64.0, 0.0, 12.0, 0.0);
 	m_SpawnPoint4 = XMVectorSet(72.0, 0.0, 64.0, 0.0);
 
-	spawnEnemyCooldownReset = 350;
+	spawnEnemyCooldownReset = 300;
 	spawnEnemyCooldown = spawnEnemyCooldownReset;
 
 	XMVECTOR currentSpawnPoint = XMVectorZero();
@@ -70,18 +72,18 @@ std::vector<bullet*> AImanager::GetAllBullets()
 	return tempAllBullets;
 }
 
-void AImanager::UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actors_node, float x_lookAt, float y_lookAt, Scene_node* walls_node, player* player1)
+void AImanager::UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actors_node, float x_lookAt, float y_lookAt, Scene_node* walls_node, player* player1, double deltaTime)
 {
 	for (int i = 0; i < enemies.size(); i++)
 	{
-		enemies[i]->UpdateBullets(walls_node);
-		enemies[i]->UpdateEnemy(bullets, actors_node, x_lookAt, y_lookAt, player1);
+		enemies[i]->UpdateBullets(walls_node, deltaTime);
+		enemies[i]->UpdateEnemy(bullets, actors_node, x_lookAt, y_lookAt, player1, deltaTime);
 	}
 }
 
-void AImanager::CheckSpawnEnemies()
+void AImanager::CheckSpawnEnemies(double deltaTime)
 {
-	spawnEnemyCooldown--;
+	spawnEnemyCooldown -= (deltaTime*0.05);
 	if (spawnEnemyCooldown < 0)
 		spawnEnemyCooldown = 0;
 

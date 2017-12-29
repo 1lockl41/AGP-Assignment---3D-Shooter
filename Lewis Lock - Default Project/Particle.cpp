@@ -5,15 +5,14 @@
 #include <stdio.h>
 #include "Particle.h"
 
-void Particle::Move()
+void Particle::Move(double deltaTime)
 {
-	lifeTime--;
+	lifeTime -= (deltaTime*0.05);
 	if (lifeTime < 0)
 		lifeTime = 0;
 
 	if (lifeTime == 0)
 	{
-
 		m_active = false;
 		setXPos(-100);
 		setYPos(-100);
@@ -21,9 +20,9 @@ void Particle::Move()
 	}
 	else
 	{
-		setXPos(getXPos() + (XMVectorGetX(m_dir)*m_speed));
-		setYPos(getYPos() + (XMVectorGetY(m_dir)*m_speed));
-		setZPos(getZPos() + (XMVectorGetZ(m_dir)*m_speed));
+		setXPos(getXPos() + (XMVectorGetX(m_dir)*(deltaTime * m_speed)));
+		setYPos(getYPos() + (XMVectorGetY(m_dir)*(deltaTime * m_speed)));
+		setZPos(getZPos() + (XMVectorGetZ(m_dir)*(deltaTime * m_speed)));
 	}
 }
 

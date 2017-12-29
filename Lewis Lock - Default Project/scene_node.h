@@ -9,7 +9,7 @@
 class Scene_node
 {
 private:
-	Model* m_p_model;
+	Model* m_p_model = NULL;
 	vector<Scene_node*> m_children;
 
 	float m_x, m_y, m_z;

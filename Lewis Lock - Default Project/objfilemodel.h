@@ -16,8 +16,8 @@ using namespace std;
 class ObjFileModel
 {
 private:
-	ID3D11Device*           pD3DDevice;
-	ID3D11DeviceContext*    pImmediateContext;
+	ID3D11Device*           pD3DDevice = NULL;
+	ID3D11DeviceContext*    pImmediateContext = NULL;
 
 
 

@@ -24,7 +24,7 @@ public:
 		m_sceneNode->SetModel(m_model);
 		m_sceneNode->SetScale(0.25);
 		root_node->addChildNode(m_sceneNode);
-		m_speed = 0.5;
+		m_speed = 0.04;
 		m_active = false;
 
 		lifeTimeReset = 50;
@@ -32,7 +32,7 @@ public:
 		m_dir = XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	};
 
-	void Move();
+	void Move(double deltaTime);
 
 	bool isActive();
 	void SetActive(bool active, float x_lookAt, float y_lookAt, float z_lookAt);

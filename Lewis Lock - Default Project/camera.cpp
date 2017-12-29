@@ -54,10 +54,6 @@ void Camera::Pitch(float degrees)
 
 XMMATRIX Camera::GetViewMatrix()
 {
-	//m_position = XMVectorSet(m_x, m_y, m_z, 0.0);
-	//m_lookat = XMVectorSet(m_x + m_dx, m_y, m_z + m_dz, 0.0);
-	//m_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
-
 	m_cameraRotationMatrix = XMMatrixRotationRollPitchYaw(m_dx, m_dz, 0);
 	m_lookat = XMVector3TransformCoord(m_defaultForward, m_cameraRotationMatrix);
 	m_lookat = XMVector3Normalize(m_lookat);

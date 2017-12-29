@@ -16,12 +16,11 @@
 class player : public baseClass
 {
 private:
-	Camera* m_playerCamera;
+	Camera* m_playerCamera = NULL;
 	//bullet* bullets[10];
 	float firingCooldown;
 	float firingCooldownReset;
 	std::vector<bullet*> bullets;
-
 
 	int m_currHealth;
 	int m_maxHealth;
@@ -41,7 +40,7 @@ public:
 		m_active = true;
 		firingCooldownReset = 25;
 		firingCooldown = firingCooldownReset;
-		m_speed = 0.25f;
+		m_speed = 0.015f;
 		m_playerScore = 0;
 
 		m_playerCamera = new Camera(getXPos(), getYPos(), getZPos()-0.5f);
@@ -49,6 +48,7 @@ public:
 		m_sceneNode->SetModel(m_model);
 		m_sceneNode->SetBelongsToPlayer(true);
 		m_sceneNode->SetIsPlayer(true);
+		//m_sceneNode->SetScale(2);
 
 		m_maxHealth = 50;
 		m_currHealth = m_maxHealth;
@@ -60,7 +60,6 @@ public:
 
 		m_active = true;
 
-		//m_sceneNode->SetScale(2);
 		actors_node->addChildNode(m_sceneNode);
 
 		for (int x = 0; x < 10; x++)
@@ -75,16 +74,16 @@ public:
 	Camera* getCamera();
 
 	void RotateCamera(InputManager* inputManager);
-	void MoveCamera(InputManager* inputManager, Scene_node* root_node);
+	void MoveCamera(InputManager* inputManager, Scene_node* root_node, double deltaTime);
 
-	void UpdateBullets(Scene_node* root_node);
-	void CheckFiring(InputManager* inputManager);
+	void UpdateBullets(Scene_node* root_node, double deltaTime);
+	void CheckFiring(InputManager* inputManager, double deltaTime);
 
 	std::vector<bullet*> GetPlayerBullets();
 
 	bool CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* root_node);
 
-	void UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, std::vector<bullet*> bullets, Scene_node* walls_node);
+	void UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, std::vector<bullet*> bullets, Scene_node* walls_node, double deltaTime);
 
 	void AddPlayerScore(int addScore);
 	int GetPlayerScore();

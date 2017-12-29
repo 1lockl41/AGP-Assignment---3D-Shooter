@@ -6,11 +6,11 @@
 #include "enemy.h"
 
 
-void enemy::UpdateBullets(Scene_node* root_node)
+void enemy::UpdateBullets(Scene_node* root_node, double deltaTime)
 {
 	for (int x = 0; x < bullets.size(); x++)
 	{
-		bullets[x]->UpdateBullet(root_node);
+		bullets[x]->UpdateBullet(root_node, deltaTime);
 	}
 }
 
@@ -52,17 +52,17 @@ bool enemy::CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* roo
 	return false;
 }
 
-void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt, player* player1)
+void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, float x_lookAt, float y_lookAt, player* player1, double deltaTime)
 {
-	particleGenerator->UpdateParticles();
+	particleGenerator->UpdateParticles(deltaTime);
 
 	if (m_active)
 	{
-		m_damageTakenCooldown--;
+		m_damageTakenCooldown -= (deltaTime*0.05);
 
 		LookAt_XZ(x_lookAt, y_lookAt);
-		MoveTowards(root_node,x_lookAt, y_lookAt);
-		CheckFiring(x_lookAt, y_lookAt);
+		MoveTowards(root_node,x_lookAt, y_lookAt, deltaTime);
+		CheckFiring(x_lookAt, y_lookAt, deltaTime);
 
 		if (m_sceneNode->check_collision(root_node, m_sceneNode))
 		{
@@ -101,25 +101,22 @@ void enemy::UpdateEnemy(std::vector<bullet*> bullets, Scene_node* root_node, flo
 
 }
 
-void enemy::MoveTowards(Scene_node* root_node, float x_lookAt, float y_lookAt)
+void enemy::MoveTowards(Scene_node* root_node, float x_lookAt, float z_lookAt, double deltaTime)
 {
-	m_dir = XMVectorSet(x_lookAt - m_xPos, 0.0, y_lookAt - m_zPos, 0.0);
+	m_dir = XMVectorSet(x_lookAt - m_xPos, 0.0, z_lookAt - m_zPos, 0.0);
 	m_dir = XMVector3Normalize(m_dir);
 
-	//setIncPos(m_xPos + (XMVectorGetX(m_dir)*m_speed));
-	//setZPos(m_zPos + (XMVectorGetZ(m_dir)*m_speed));
-
-	m_sceneNode->IncSetX(m_xPos + (XMVectorGetX(m_dir)*m_speed), root_node);
-	m_sceneNode->IncSetZ(m_zPos + (XMVectorGetZ(m_dir)*m_speed), root_node);
+	m_sceneNode->IncSetX(m_xPos + (XMVectorGetX(m_dir)*(deltaTime*m_speed)), root_node);
+	m_sceneNode->IncSetZ(m_zPos + (XMVectorGetZ(m_dir)*(deltaTime*m_speed)), root_node);
 
 	setXPos(m_sceneNode->GetXPos());
 	setZPos(m_sceneNode->GetZPos());
 }
 
 
-void enemy::CheckFiring(float x_lookAt, float y_lookAt)
+void enemy::CheckFiring(float x_lookAt, float y_lookAt, double deltaTime)
 {
-	m_firingCooldown--;
+	m_firingCooldown-=(deltaTime*0.05);
 	if (m_firingCooldown < 0)
 		m_firingCooldown = 0;
 

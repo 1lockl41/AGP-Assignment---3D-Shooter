@@ -281,6 +281,9 @@ HRESULT game::InitialiseGraphics()//03 - 01
 	g_sky_node->SetZPos(24);
 	skyBox->getModel()->SetIsSkybox(true);
 
+	previousTime = 0;
+	deltaTime = 0;
+
 	return S_OK;
 }
 
@@ -299,25 +302,29 @@ void game::RenderFrame(void)
 
 	//Set lighting
 	g_directional_light_shines_from = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	g_directional_light_colour = XMVectorSet(0.4f, 0.4f, 0.4f, 0.0f);
-	g_ambient_light_colour = XMVectorSet(0.8f, 0.8f, 0.8f, 0.0f);
+	g_directional_light_colour = XMVectorSet(0.6f, 0.6f, 0.6f, 0.0f);
+	g_ambient_light_colour = XMVectorSet(0.6f, 0.6f, 0.6f, 0.0f);
 
 	XMMATRIX view = player1->getCamera()->GetViewMatrix();
 	XMMATRIX projection;
-	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), 640.0 / 480.0, 1.0, 100.0);
+	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), 640.0 / 480.0, 1.0, 200.0);
 	XMMATRIX identityMatrix = XMMatrixIdentity();
 
-
+	//If player is alive, render and update the game.
+	//Otherwise, end the game and display game over text.
 	if (player1->IsActive())
 	{
+		//Calculate delta time, ensures that speed and timings are the same no matter changes in frame rate
+		deltaTime = GetTickCount() - previousTime;
+		previousTime = GetTickCount();
 
-		player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node); //Read players input, update player position, and player's bullets positions
+		player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node, deltaTime); //Read players input, update player position, and player's bullets positions
 		player1->CheckHealthKitCollision(healthKit1); //check if player has collided with health kit, should put into above update function
 		player1->CheckShotgunCollision(shotgun1);
 		player1->CheckPushableBlockCollision(pushableBlock1, g_actors_node);
 
-		AImanager1->CheckSpawnEnemies(); //check if enemies should be spawned, spawning them if so
-		AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node, player1); //update all active enemies
+		AImanager1->CheckSpawnEnemies(deltaTime); //check if enemies should be spawned, spawning them if so
+		AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node, player1, deltaTime); //update all active enemies
 
 		healthKit1->Update(); //Update health kit, check if it should respawn or not
 
@@ -344,7 +351,6 @@ void game::RenderFrame(void)
 	{
 		g_2DText->AddText("GAME OVER", -0.5, 0.0, .1);
 		g_2DText->RenderText();
-
 	}
 
 	//Display what has just been rendered

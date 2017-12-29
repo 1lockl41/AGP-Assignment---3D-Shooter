@@ -22,7 +22,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-	game* game1;
+	game* game1 = NULL;
 	game1 = new game();
 
 	if (FAILED(game1->InitialiseWindow(hInstance, nCmdShow)))

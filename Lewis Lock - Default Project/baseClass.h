@@ -11,12 +11,12 @@ class baseClass
 {
 protected:
 
-	Model* m_model;
+	Model* m_model = NULL;
 	float m_xPos, m_yPos, m_zPos;
 	float m_xAngle, m_yAngle, m_zAngle;
-	ID3D11ShaderResourceView* m_pTexture;
-	ID3D11SamplerState* m_pSampler;
-	Scene_node* m_sceneNode;
+	ID3D11ShaderResourceView* m_pTexture = NULL;
+	ID3D11SamplerState* m_pSampler = NULL;
+	Scene_node* m_sceneNode = NULL;
 	bool m_active;
 	float m_speed;
 

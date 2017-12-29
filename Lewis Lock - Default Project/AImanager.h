@@ -30,10 +30,7 @@ public:
 	std::vector<enemy*> GetEnemies();
 	std::vector<bullet*> GetAllBullets();
 
-	void UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actors_node, float x_lookAt, float y_lookAt, Scene_node* walls_node, player* player1);
+	void UpdateAllEnemies(std::vector<bullet*> bullets, Scene_node* actors_node, float x_lookAt, float y_lookAt, Scene_node* walls_node, player* player1, double deltaTime);
 
-	void CheckSpawnEnemies();
-
-
-
+	void CheckSpawnEnemies(double deltaTime);
 };

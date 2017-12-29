@@ -182,16 +182,6 @@ bool Scene_node::check_collision(Scene_node* compare_tree, Scene_node* object_tr
 		return false;
 	}
 
-	//if (object_tree_root->GetBelongsToPlayer() && compare_tree->GetBelongsToEnemy())
-	//{
-	//	return false;
-	//}
-
-	//if (object_tree_root->GetBelongsToEnemy() && compare_tree->GetBelongsToPlayer())
-	//{
-	//	return false;
-	//}
-
 	// only check for collisions if both nodes contain a model
 	if (m_p_model && compare_tree->m_p_model)
 	{

@@ -9,22 +9,22 @@
 class Model
 {
 private:
-	ID3D11Device* m_pD3DDevice;
-	ID3D11DeviceContext* m_pImmediateContext;
+	ID3D11Device* m_pD3DDevice = NULL;
+	ID3D11DeviceContext* m_pImmediateContext = NULL;
 
-	ID3D11RasterizerState* m_pRasterSolid;
-	ID3D11RasterizerState* m_pRasterSkybox;
-	ID3D11DepthStencilState* m_pDepthWriteSolid;
-	ID3D11DepthStencilState* m_pDepthWriteSkybox;
+	ID3D11RasterizerState* m_pRasterSolid = NULL;
+	ID3D11RasterizerState* m_pRasterSkybox = NULL;
+	ID3D11DepthStencilState* m_pDepthWriteSolid = NULL;
+	ID3D11DepthStencilState* m_pDepthWriteSkybox = NULL;
 
-	ObjFileModel* m_pObject;
-	ID3D11VertexShader* m_pVShader;
-	ID3D11PixelShader* m_pPShader;
-	ID3D11InputLayout* m_pInputLayout;
-	ID3D11Buffer* m_pConstantBuffer;
+	ObjFileModel* m_pObject = NULL;
+	ID3D11VertexShader* m_pVShader = NULL;
+	ID3D11PixelShader* m_pPShader = NULL;
+	ID3D11InputLayout* m_pInputLayout = NULL;
+	ID3D11Buffer* m_pConstantBuffer = NULL;
 
-	ID3D11ShaderResourceView* m_pTexture0;
-	ID3D11SamplerState* m_pSampler0;
+	ID3D11ShaderResourceView* m_pTexture0 = NULL;
+	ID3D11SamplerState* m_pSampler0 = NULL;
 
 	float m_x, m_y, m_z;
 	float m_xangle, m_zangle, m_yangle;

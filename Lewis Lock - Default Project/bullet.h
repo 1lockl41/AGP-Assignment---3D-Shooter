@@ -35,7 +35,7 @@ public:
 		m_sceneNode->SetScale(0.1);
 		root_node->addChildNode(m_sceneNode);
 
-		m_speed = 0.25;
+		m_speed = 0.02;
 		m_active = false;
 
 		m_activeTimeReset = 300;
@@ -58,8 +58,8 @@ public:
 		m_sceneNode->SetBelongsToPlayer(belongsToPlayer);
 	};
 
-	void moveForward();
-	void UpdateBullet(Scene_node* root_node);
+	void moveForward(double deltaTime);
+	void UpdateBullet(Scene_node* root_node, double deltaTime);
 	void UpdateBulletRotation();
 	void SetActive(float xPos, float yPos, float zPos, float dx, float dz);
 	void Deactivate();
@@ -68,6 +68,6 @@ public:
 
 	bool IsActive();
 
-	void MoveTowards();
+	void MoveTowards(double deltaTime);
 	void SetDirection(float x_lookAt, float y_lookAt);
 };

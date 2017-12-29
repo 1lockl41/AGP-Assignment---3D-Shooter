@@ -30,7 +30,6 @@ level::level(bool isSkybox, int levelSizeX, int levelSizeZ, Scene_node* root_nod
 
 	InitialiseLevelWalls();
 	SetupLevelWalls(isSkybox, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
-
 }
 
 

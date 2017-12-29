@@ -32,7 +32,6 @@ void ParticleGenerator::SpawnParticles()
 			float y_lookAt = minRandom + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxRandom - minRandom)));
 			float z_lookAt = minRandom + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxRandom - minRandom)));
 
-
 			particles[i]->setXPos(xPos);
 			particles[i]->setYPos(yPos);
 			particles[i]->setZPos(zPos);
@@ -42,14 +41,14 @@ void ParticleGenerator::SpawnParticles()
 
 }
 
-void ParticleGenerator::UpdateParticles()
+void ParticleGenerator::UpdateParticles(double deltaTime)
 {
 	for (int i = 0; i < particles.size(); i++)
 	{
 		if (particles[i]->isActive())
 		{
 
-			particles[i]->Move();
+			particles[i]->Move(deltaTime);
 		}
 
 	}

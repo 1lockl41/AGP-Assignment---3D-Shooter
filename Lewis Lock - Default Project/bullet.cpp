@@ -5,31 +5,17 @@
 #include <stdio.h>
 #include "bullet.h"
 
-void bullet::moveForward()
+void bullet::moveForward(double deltaTime)
 {
-	m_moveBackForward += m_speed;
-
+	m_moveBackForward += (deltaTime*m_speed);
 }
 
 void bullet::UpdateBulletRotation()
 {
-
-	m_bulletRotationMatrix = XMMatrixRotationRollPitchYaw(m_xAngle, m_yAngle, m_zAngle);
-	m_lookat = XMVector3TransformCoord(m_defaultForward, m_bulletRotationMatrix);
-	m_lookat = XMVector3Normalize(m_lookat);
-
 	XMMATRIX RotateYTempMatrix;
-	if (m_yAngle == 0)
-	{
-		RotateYTempMatrix = XMMatrixRotationY(m_zAngle);
-	}
-	else
-	{
-		RotateYTempMatrix = XMMatrixRotationY(m_yAngle);
-	}
+	RotateYTempMatrix = XMMatrixRotationY(m_zAngle);
 
 	m_bulletRight = XMVector3TransformCoord(m_defaultRight, RotateYTempMatrix);
-	m_up = XMVector3TransformCoord(m_up, RotateYTempMatrix);
 	m_bulletForward = XMVector3TransformCoord(m_defaultForward, RotateYTempMatrix);
 
 	m_position += m_moveLeftRight*m_bulletRight;
@@ -38,12 +24,9 @@ void bullet::UpdateBulletRotation()
 	m_moveLeftRight = 0.0f;
 	m_moveBackForward = 0.0f;
 
-	m_lookat = m_position + m_lookat;
-
 	setXPos(getXPos() + XMVectorGetX(m_position));
 	setYPos(getYPos() + XMVectorGetY(m_position));
 	setZPos(getZPos() + XMVectorGetZ(m_position));
-
 }
 
 void bullet::SetDirection(float x_lookAt, float y_lookAt)
@@ -52,17 +35,17 @@ void bullet::SetDirection(float x_lookAt, float y_lookAt)
 	m_dir = XMVector3Normalize(m_dir);
 }
 
-void bullet::MoveTowards()
+void bullet::MoveTowards(double deltaTime)
 {
-	setXPos(m_xPos + (XMVectorGetX(m_dir)*m_speed));
-	setZPos(m_zPos + (XMVectorGetZ(m_dir)*m_speed));
+	setXPos(m_xPos + (XMVectorGetX(m_dir)*(deltaTime*m_speed)));
+	setZPos(m_zPos + (XMVectorGetZ(m_dir)*(deltaTime*m_speed)));
 }
 
-void bullet::UpdateBullet(Scene_node* root_node)
+void bullet::UpdateBullet(Scene_node* root_node, double deltaTime)
 {
 	if (m_active)
 	{
-		m_activeTime--;
+		m_activeTime -= (deltaTime*0.05);
 		if (m_activeTime < 0)
 			m_activeTime = 0;
 
@@ -77,12 +60,12 @@ void bullet::UpdateBullet(Scene_node* root_node)
 
 		if (m_sceneNode->GetBelongsToPlayer())
 		{
-			moveForward();
+			moveForward(deltaTime);
 			UpdateBulletRotation();
 		}
 		else
 		{
-			MoveTowards();
+			MoveTowards(deltaTime);
 		}
 
 		XMMATRIX identity = XMMatrixIdentity();

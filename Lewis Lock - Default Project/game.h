@@ -41,35 +41,42 @@ private:
 
 	ID3D11RenderTargetView* g_pBackBufferRTView = NULL;
 
-	ID3D11DepthStencilView* g_pZBuffer;
+	ID3D11DepthStencilView* g_pZBuffer = NULL;
 
-	ID3D11RasterizerState* g_pRasterSolid;
-	ID3D11RasterizerState* g_pRasterSkybox;
-	ID3D11DepthStencilState* g_pDepthWriteSolid;
-	ID3D11DepthStencilState* g_pDepthWriteSkybox;
+	ID3D11RasterizerState* g_pRasterSolid = NULL;
+	ID3D11RasterizerState* g_pRasterSkybox = NULL;
+	ID3D11DepthStencilState* g_pDepthWriteSolid = NULL;
+	ID3D11DepthStencilState* g_pDepthWriteSkybox = NULL;
 
-	Text2D* g_2DText;
+	Text2D* g_2DText = NULL;
 
 	XMVECTOR g_directional_light_shines_from;
 	XMVECTOR g_directional_light_colour;
 	XMVECTOR g_ambient_light_colour;
 
-	InputManager* inputManager;
+	InputManager* inputManager = NULL;
 
-	Scene_node* g_sky_node;  //A seperate node, contains only the sky box. All collisions ignore this.
-	Scene_node* g_floor_node; //The root node in the tree, contains the floor. All collisions currently ignore this, as there is no gravity.
-	Scene_node* g_actors_node; //The second node in the tree, contains all moving actors such as players, enemies and bullets. Player and enemy movement will use this for collision so they dont move through each other.
-	Scene_node* g_walls_node; //The last node in the last, contains the walls for the level. Bullets will use this for collision so they are destroyed when hitting a wall.
+	//A seperate node, contains only the sky box. All collisions ignore this.
+	Scene_node* g_sky_node = NULL;
+	//The root node in the tree, contains the floor. All collisions currently ignore this, as there is no gravity.
+	Scene_node* g_floor_node = NULL;
+	//The second node in the tree, contains all moving actors such as players, enemies and bullets. Player and enemy movement will use this for collision so they dont move through each other.
+	Scene_node* g_actors_node = NULL;
+	//The last node in the last, contains the walls for the level. Actors will use this for collision so they stop when hitting a wall.
+	Scene_node* g_walls_node = NULL;
 
-	level* level1;
-	wall* skyBox;
+	level* level1 = NULL;
+	wall* skyBox = NULL;
 
-	player* player1;
-	AImanager* AImanager1;
-	pickupHealth* healthKit1;
-	pickupShotgun* shotgun1;
-	pushableBlock* pushableBlock1;
-	triggerPlate* removeableWallsTrigger;
+	player* player1 = NULL;
+	AImanager* AImanager1 = NULL;
+	pickupHealth* healthKit1 = NULL;
+	pickupShotgun* shotgun1 = NULL;
+	pushableBlock* pushableBlock1 = NULL;
+	triggerPlate* removeableWallsTrigger = NULL;
+
+	double previousTime;
+	double deltaTime;
 
 public:
 
