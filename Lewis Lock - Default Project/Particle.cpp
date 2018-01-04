@@ -7,10 +7,12 @@
 
 void Particle::Move(double deltaTime)
 {
+	//Reduce lifetime, once this is over deativation particle.
 	lifeTime -= (deltaTime*0.05);
 	if (lifeTime < 0)
 		lifeTime = 0;
 
+	//If lifetime is over, deactive, otherwise move in direction
 	if (lifeTime == 0)
 	{
 		m_active = false;
@@ -33,7 +35,8 @@ bool Particle::isActive()
 
 void Particle::SetActive(bool active,float x_lookAt, float y_lookAt, float z_lookAt)
 {
-	m_dir = XMVectorSet(x_lookAt - m_xPos, y_lookAt - m_yPos, z_lookAt - m_zPos, 0.0);
+	//Set direction to move in
+	m_dir = XMVectorSet(x_lookAt - m_xPos, y_lookAt - m_yPos, z_lookAt - m_zPos, 0.0); 
 	m_dir = XMVector3Normalize(m_dir);
 
 	m_active = active;

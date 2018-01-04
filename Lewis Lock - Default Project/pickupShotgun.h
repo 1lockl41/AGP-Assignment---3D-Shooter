@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "baseClass.h"
 
+//Shotgun pick up, grants player the ability to fire three bullets at once
 class pickupShotgun : public baseClass
 {
 private:
@@ -38,6 +39,4 @@ public:
 	void OnPickUp();
 	bool IsActive();
 	void Update();
-
-
 };

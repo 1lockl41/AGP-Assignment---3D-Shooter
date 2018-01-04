@@ -227,16 +227,18 @@ HRESULT game::InitialiseGraphics()//03 - 01
 	g_floor_node = new Scene_node();
 	g_actors_node = new Scene_node();
 
+	//Initialise rasteriser desc for solid blocks
 	D3D11_RASTERIZER_DESC rasterDesc;
 	ZeroMemory(&rasterDesc, sizeof(rasterDesc));
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
-
-	/////////////////SKY BOX///////////////////
 	g_pD3DDevice->CreateRasterizerState(&rasterDesc, &g_pRasterSolid);
+
+	//Initialise rasteriser desc for skybox
 	rasterDesc.CullMode = D3D11_CULL_FRONT;
 	g_pD3DDevice->CreateRasterizerState(&rasterDesc, &g_pRasterSkybox);
 
+	//Initialise depth desc for solid objects
 	D3D11_DEPTH_STENCIL_DESC depthDesc;
 	depthDesc.DepthEnable = true;
 	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
@@ -252,35 +254,48 @@ HRESULT game::InitialiseGraphics()//03 - 01
 	depthDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depthDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 	depthDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSolid);
+
+	//Initialise depth desc for skybox
 	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	g_pD3DDevice->CreateDepthStencilState(&depthDesc, &g_pDepthWriteSkybox);
-	///////////////////////////////////////////
 
+	//Set up scene nodes - ordering described in header file.
+	//Floor node -> Actors node -> Walls node
 	g_floor_node->addChildNode(g_actors_node);
 	g_actors_node->addChildNode(g_walls_node);
 
+	//Set up level to 12 x 12 size
 	level1 = new level(false, 12, 12, g_walls_node, g_floor_node,"Assets/cube.obj","Assets/texture_wall1.bmp","Assets/texture_floor1.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
+	//Set up health kit position and spawn it, so its placed at start of game
 	healthKit1 = new pickupHealth(47, 0, 35, g_actors_node,"Assets/cube.obj","Assets/texture_healthKit.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	healthKit1->Spawn();
 
+	//Set up shotgun pickup and spawn it, so its placed at the start of game
 	shotgun1 = new pickupShotgun(75, 0, 75, g_actors_node, "Assets/cube.obj", "Assets/texture_shotgun.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	shotgun1->Spawn();
 
+	//Place pushable block
 	pushableBlock1 = new pushableBlock(28, -2, 16, g_walls_node, "Assets/cube.obj", "Assets/texture_pushableBlock.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
+	//Place trigger which removes any removable walls on level, which block the entrance to shotgun pickup
 	removeableWallsTrigger = new triggerPlate(28,-7.6, 72, g_floor_node, "Assets/cube.obj", "Assets/texture_pushableBlock.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 
+	//Place player on level
 	player1 = new player(false, 12, 0, 20, g_actors_node, "Assets/PointySphere.obj", "Assets/texture_playerBullets.bmp", "Assets/cube.obj", "Assets/texture.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	
+	//Set up AI manager, allowing enemies to spawn
 	AImanager1 = new AImanager(4, g_actors_node, g_floor_node, "Assets/PointySphere.obj", "Assets/texture_enemyBullets.bmp", "Assets/cube.obj", "Assets/texture_enemy.bmp", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
+	
+	//Set up skybox and attatch it to skybox node, which is seperate from the other scene nodes
 	skyBox = new wall(true, 20, 0, 20, g_sky_node, "Assets/cube.obj", "Assets/skybox02.dds", g_pD3DDevice, g_pImmediateContext, g_pRasterSolid, g_pRasterSkybox, g_pDepthWriteSolid, g_pDepthWriteSkybox);
 	skyBox->setScale(42);
 	g_sky_node->SetXPos(24);
 	g_sky_node->SetZPos(24);
 	skyBox->getModel()->SetIsSkybox(true);
 
+	//Initialise delta time
 	previousTime = 0;
 	deltaTime = 0;
 
@@ -305,6 +320,7 @@ void game::RenderFrame(void)
 	g_directional_light_colour = XMVectorSet(0.6f, 0.6f, 0.6f, 0.0f);
 	g_ambient_light_colour = XMVectorSet(0.6f, 0.6f, 0.6f, 0.0f);
 
+	//Update view matrix based on players view
 	XMMATRIX view = player1->getCamera()->GetViewMatrix();
 	XMMATRIX projection;
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), 640.0 / 480.0, 1.0, 200.0);
@@ -319,9 +335,9 @@ void game::RenderFrame(void)
 		previousTime = GetTickCount();
 
 		player1->UpdatePlayer(inputManager, g_actors_node, AImanager1->GetAllBullets(), g_walls_node, deltaTime); //Read players input, update player position, and player's bullets positions
-		player1->CheckHealthKitCollision(healthKit1); //check if player has collided with health kit, should put into above update function
-		player1->CheckShotgunCollision(shotgun1);
-		player1->CheckPushableBlockCollision(pushableBlock1, g_actors_node);
+		player1->CheckHealthKitCollision(healthKit1); //check if player has collided with health kit, in which case collect it and add health to player
+		player1->CheckShotgunCollision(shotgun1); //check if player has collided with shotgun pick up, in which case collect it and add shotgun power up to player
+		player1->CheckPushableBlockCollision(pushableBlock1, g_actors_node); //check if player is colliding with pushable block, in which case move it in opposite direction
 
 		AImanager1->CheckSpawnEnemies(deltaTime); //check if enemies should be spawned, spawning them if so
 		AImanager1->UpdateAllEnemies(player1->GetPlayerBullets(), g_actors_node, player1->getXPos(), player1->getZPos(), g_walls_node, player1, deltaTime); //update all active enemies
@@ -339,6 +355,7 @@ void game::RenderFrame(void)
 		//g_sky_node->SetXPos(player1->getXPos());
 		//g_sky_node->SetZPos(player1->getZPos());
 
+		//Draw scene nodes
 		g_sky_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from); //Draw skybox
 		g_floor_node->execute(&identityMatrix, &view, &projection, g_directional_light_colour, g_ambient_light_colour, g_directional_light_shines_from); //Draw everything else
 
@@ -349,6 +366,7 @@ void game::RenderFrame(void)
 	}
 	else
 	{
+		//Display game over text on game over
 		g_2DText->AddText("GAME OVER", -0.5, 0.0, .1);
 		g_2DText->RenderText();
 	}

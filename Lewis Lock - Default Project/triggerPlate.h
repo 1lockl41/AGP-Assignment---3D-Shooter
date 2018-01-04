@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "baseClass.h"
 
+//A trigger plate object. The pushable block uses the position of this object to check whether or not it has been triggered, removing any removable walls on the level.
 class triggerPlate : public baseClass
 {
 private:

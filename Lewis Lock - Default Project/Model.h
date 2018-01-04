@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "objfilemodel.h"
 
+//Model class, attatched to any object which has a model. Draws model and sets up collision information for scene node
 class Model
 {
 private:

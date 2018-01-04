@@ -27,7 +27,7 @@ struct POS_TEX_VERTEX
 // increase if more characters requird
 const int MAX_CHARACTERS = 10000;
 
-
+//Allows drawing of 2D text on the screen, used for HUD and game over screen
 class Text2D
 {
 private:

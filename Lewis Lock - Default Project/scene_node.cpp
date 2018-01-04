@@ -259,7 +259,7 @@ bool Scene_node::IncY(float in, Scene_node* root_node)
 	// since state has changed, need to update collision tree
 	// this basic system requires entire hirearchy to be updated
 	// so start at root node passing in identity matrix
-	//root_node->UpdateCollisionTree(&identity, 1.0);
+	root_node->UpdateCollisionTree(&identity, 1.0); 
 
 	// check for collision of this node (and children) against all other nodes
 	if (check_collision(root_node, this) == true)
@@ -283,7 +283,7 @@ bool Scene_node::IncZ(float in, Scene_node* root_node)
 	// since state has changed, need to update collision tree
 	// this basic system requires entire hirearchy to be updated
 	// so start at root node passing in identity matrix
-	//root_node->UpdateCollisionTree(&identity, 1.0);
+	root_node->UpdateCollisionTree(&identity, 1.0); 
 
 	// check for collision of this node (and children) against all other nodes
 	if (check_collision(root_node, this) == true)
@@ -308,7 +308,7 @@ bool Scene_node::IncSetX(float xPos, Scene_node* root_node)
 	// since state has changed, need to update collision tree
 	// this basic system requires entire hirearchy to be updated
 	// so start at root node passing in identity matrix
-	//root_node->UpdateCollisionTree(&identity, 1.0);
+	root_node->UpdateCollisionTree(&identity, 1.0); 
 
 	// check for collision of this node (and children) against all other nodes
 	if (check_collision(root_node, this) == true)

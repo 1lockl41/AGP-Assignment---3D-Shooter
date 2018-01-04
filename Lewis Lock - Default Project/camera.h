@@ -9,13 +9,14 @@
 #define XM_NO_ALIGNMENT
 #include <xnamath.h>
 
+//The camera object, moves based on player's position and direction. Used to draw the game
 class Camera
 {
 public:
 	Camera(float x, float y, float z);
-	void Forward(float distance);
-	void Sideways(float distance);
-	XMMATRIX GetViewMatrix();
+	void Forward(float distance); //Move camera back and forward
+	void Sideways(float distance); //Move camera left and right
+	XMMATRIX GetViewMatrix(); //Get the current view
 	float GetX();
 	float GetY();
 	float GetZ();
@@ -23,10 +24,11 @@ public:
 	void SetY(float y);
 	void SetZ(float z);
 
+	//Move in specifc directions, and rotation on yaw and pitch, looking up, down, left and right. Pitch is currently not used
 	void MoveX(float xSpeed);
 	void MoveY(float ySpeed);
 	void MoveZ(float zSpeed);
-	void Yaw(float degrees);
+	void Yaw(float degrees); 
 	void Pitch(float degrees);
 
 	float GetRotationDX();

@@ -6,16 +6,18 @@
 #include <stdio.h>
 #include "baseClass.h"
 
+//Particle class, a simple object which has no collision and will move in a set direction until their lifetime is over.
+//Managed by a particle generator which they belong to.
 class Particle : public baseClass
 {
 private:
-
+	
+	//The life time of the particle, once this is over it will become inactive and return to the pool
 	int lifeTime;
 	int lifeTimeReset;
 
+	//Direction to move in
 	XMVECTOR m_dir;
-
-
 
 public:
 
@@ -32,9 +34,13 @@ public:
 		m_dir = XMVectorSet(0.0, 0.0, 0.0, 0.0);
 	};
 
+	//Move based on direction
 	void Move(double deltaTime);
 
+	//Check if active
 	bool isActive();
+
+	//Spawn particle, setting active, position, and diection to move in
 	void SetActive(bool active, float x_lookAt, float y_lookAt, float z_lookAt);
 
 };

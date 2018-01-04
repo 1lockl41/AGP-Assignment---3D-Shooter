@@ -10,17 +10,18 @@ Camera* player::getCamera()
 	return m_playerCamera;
 }
 
+//Rotate camera based on mouse movement. Only allow yaw movement
 void player::RotateCamera(InputManager* inputManager)
 {
 	///////Camera facing movement with arrow keys//////
-	if (inputManager->IsKeyPressed(DIK_DOWN))
-	{
-		getCamera()->Pitch(0.0002f);
-	}
-	if (inputManager->IsKeyPressed(DIK_UP))
-	{
-		getCamera()->Pitch(-0.0002f);
-	}
+	//if (inputManager->IsKeyPressed(DIK_DOWN))
+	//{
+	//	getCamera()->Pitch(0.0002f);
+	//}
+	//if (inputManager->IsKeyPressed(DIK_UP))
+	//{
+	//	getCamera()->Pitch(-0.0002f);
+	//}
 	if (inputManager->IsKeyPressed(DIK_LEFT))
 	{
 		getCamera()->Yaw(-0.0002f);
@@ -42,9 +43,11 @@ void player::RotateCamera(InputManager* inputManager)
 	//////////////////////////////////////////////////
 }
 
+//Move camera based on keyboard input
 void player::MoveCamera(InputManager* inputManager, Scene_node* root_node, double deltaTime)
 {
 
+	//If 'W' pressed, move forward
 	if (inputManager->IsKeyPressed(DIK_W))
 	{
 		getCamera()->Forward((deltaTime*m_speed));
@@ -68,6 +71,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node, doubl
 			setZPos(getCamera()->GetZ());
 		}
 	}
+	//If 'S' pressed, move backwards
 	if (inputManager->IsKeyPressed(DIK_S))
 	{
 		getCamera()->Forward(-(deltaTime*m_speed));
@@ -91,6 +95,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node, doubl
 			setZPos(getCamera()->GetZ());
 		}
 	}
+	//If 'A' pressed, move left
 	if (inputManager->IsKeyPressed(DIK_A))
 	{
 		getCamera()->Sideways(-(deltaTime*m_speed));
@@ -114,6 +119,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node, doubl
 			setZPos(getCamera()->GetZ());
 		}
 	}
+	//If 'D' pressed, move right
 	if (inputManager->IsKeyPressed(DIK_D))
 	{
 		getCamera()->Sideways((deltaTime*m_speed));
@@ -139,6 +145,7 @@ void player::MoveCamera(InputManager* inputManager, Scene_node* root_node, doubl
 	}
 }
 
+//Update all bullets belonging to the player, moving them and checking collisions
 void player::UpdateBullets(Scene_node* root_node, double deltaTime)
 {
 	for (int x = 0; x < bullets.size(); x++)
@@ -147,6 +154,7 @@ void player::UpdateBullets(Scene_node* root_node, double deltaTime)
 	}
 }
 
+//Check wether the player can fire again. Shoot a bullet when key pressed
 void player::CheckFiring(InputManager* inputManager, double deltaTime)
 {
 
@@ -155,7 +163,9 @@ void player::CheckFiring(InputManager* inputManager, double deltaTime)
 		firingCooldown = 0;
 
 
-	bool loop = true;
+	bool loop = true; //Set to false once a bullet has been spawned to ensure only one is created
+	
+	//If 'E' pressed and player can fire a bullet, create a moving bullet
 	if (inputManager->IsKeyPressed(DIK_E) && firingCooldown == 0)
 	{
 		for (int x = 0; x < bullets.size(); x++)
@@ -163,6 +173,8 @@ void player::CheckFiring(InputManager* inputManager, double deltaTime)
 			if (!bullets[x]->IsActive() && loop)
 			{
 				bullets[x]->SetActive(m_xPos, m_yPos, m_zPos, m_playerCamera->GetRotationDX(), m_playerCamera->GetRotationDZ());
+
+				//If shotgun is unlocked, spawn two addition bullets in different directions to spread
 				if (m_shotgunPowerUp)
 				{
 					bullets[x + 1]->SetActive(m_xPos, m_yPos, m_zPos, m_playerCamera->GetRotationDX(), m_playerCamera->GetRotationDZ() + 0.2);
@@ -175,11 +187,13 @@ void player::CheckFiring(InputManager* inputManager, double deltaTime)
 	}
 }
 
+//Return all bullets belonging to the player
 std::vector<bullet*> player::GetPlayerBullets()
 {
 	return bullets;
 }
 
+//Check wether or not the player is colliding with any enemy bullets
 bool player::CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* root_node)
 {
 	for (int i = 0; i < bullets.size(); i++)
@@ -206,7 +220,7 @@ bool player::CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* ro
 				float dy = y1 - y2;
 				float dz = z1 - z2;
 
-				//check bounding sphere collision
+				//check bounding sphere collision, if colliding with any enemy bullet, deactivate the bullet and store the damage dealt
 				if (sqrt(dx*dx + dy*dy + dz*dz) < (bullets[i]->getModel()->GetBoundingSphereRadius() * bullets[i]->getSceneNode()->GetWorldScale()) + (this->getModel()->GetBoundingSphereRadius() * this->getSceneNode()->GetWorldScale()))
 				{
 					m_damageTaken = bullets[i]->GetDamage();
@@ -220,22 +234,26 @@ bool player::CheckCollisionsBullets(std::vector<bullet*> bullets, Scene_node* ro
 	return false;
 }
 
+//Update player movement and collision
 void player::UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, std::vector<bullet*> bullets, Scene_node* walls_node, double deltaTime)
 {
+	//If active, allow movement
 	if (m_active)
 	{
-		m_damageTakenCooldown -= (deltaTime * 0.05);
+		m_damageTakenCooldown -= (deltaTime * 0.05); //Reduce current damage cooldown
 
-		RotateCamera(inputManager);
-		MoveCamera(inputManager, actors_node, deltaTime);
-		CheckFiring(inputManager, deltaTime);
-		UpdateBullets(walls_node, deltaTime);
+		RotateCamera(inputManager); //Rotate camera
+		MoveCamera(inputManager, actors_node, deltaTime); //Move camera
+		CheckFiring(inputManager, deltaTime); //Fire bullet
+		UpdateBullets(walls_node, deltaTime); //Update bullets
 
+		//If colliding with an actor
 		if (m_sceneNode->check_collision(actors_node, m_sceneNode))
 		{
+			//Check if the collision is with a bullet
 			if (CheckCollisionsBullets(bullets, actors_node))
 			{
-
+				//If player can take damage, take damage based on colliding bullet's damage value
 				if (m_damageTakenCooldown <= 0)
 				{
 					m_currHealth -= m_damageTaken;
@@ -244,9 +262,10 @@ void player::UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, s
 					m_damageTakenCooldown = m_damageTakenCooldownReset;
 				}
 
+				//If player has died, set player to inactive
 				if (m_currHealth <= 0)
 				{
-					m_currHealth = 0;
+					m_currHealth = 0; //Do not allow current health to go below 0, prevents issues with text displaying negative values
 					m_active = false;
 				}
 			}
@@ -254,6 +273,7 @@ void player::UpdatePlayer(InputManager* inputManager, Scene_node* actors_node, s
 	}
 }
 
+//Add points to score
 void player::AddPlayerScore(int addScore)
 {
 	m_playerScore += addScore;
@@ -269,9 +289,9 @@ int player::GetPlayerHealth()
 	return m_currHealth;
 }
 
+//Check whether player is colliding with a health kit
 void player::CheckHealthKitCollision(pickupHealth* healthKit)
 {
-
 	if (healthKit->IsActive())
 	{
 		//only check for collisions if both nodes contain a model
@@ -293,7 +313,7 @@ void player::CheckHealthKitCollision(pickupHealth* healthKit)
 			float dy = y1 - y2;
 			float dz = z1 - z2;
 
-			//check bounding sphere collision
+			//check bounding sphere collision, if colliding, perform health kit pick up and add health
 			if (sqrt(dx*dx + dy*dy + dz*dz) < (healthKit->getModel()->GetBoundingSphereRadius() * healthKit->getSceneNode()->GetWorldScale()) + (this->getModel()->GetBoundingSphereRadius() * this->getSceneNode()->GetWorldScale()))
 			{
 				healthKit->OnPickUp();
@@ -303,7 +323,7 @@ void player::CheckHealthKitCollision(pickupHealth* healthKit)
 	}
 }
 
-
+//Check wether the player is colliding with a pushable block.
 void player::CheckPushableBlockCollision(pushableBlock* pushBlock, Scene_node* walls_node)
 {
 	//only check for collisions if both nodes contain a model
@@ -325,7 +345,7 @@ void player::CheckPushableBlockCollision(pushableBlock* pushBlock, Scene_node* w
 		float dy = y1 - y2;
 		float dz = z1 - z2;
 
-		//check bounding sphere collision
+		//check bounding sphere collision, if colliding, move the pushable block away from the player
 		if (sqrt(dx*dx + dy*dy + dz*dz) < (pushBlock->getModel()->GetBoundingSphereRadius() * pushBlock->getSceneNode()->GetWorldScale()) + (this->getModel()->GetBoundingSphereRadius() * this->getSceneNode()->GetWorldScale()))
 		{
 			pushBlock->MoveAwayFrom(m_xPos, m_zPos, walls_node);
@@ -333,6 +353,7 @@ void player::CheckPushableBlockCollision(pushableBlock* pushBlock, Scene_node* w
 	}
 }
 
+//check whether player is colliding with a shotgun pick up
 void player::CheckShotgunCollision(pickupShotgun* shotgun)
 {
 	//only check for collisions if both nodes contain a model
@@ -354,7 +375,7 @@ void player::CheckShotgunCollision(pickupShotgun* shotgun)
 		float dy = y1 - y2;
 		float dz = z1 - z2;
 
-		//check bounding sphere collision
+		//check bounding sphere collision, if colliding, perform shotgun's on pickup and unlock player's shotgun ability
 		if (sqrt(dx*dx + dy*dy + dz*dz) < (shotgun->getModel()->GetBoundingSphereRadius() * shotgun->getSceneNode()->GetWorldScale()) + (this->getModel()->GetBoundingSphereRadius() * this->getSceneNode()->GetWorldScale()))
 		{
 			shotgun->OnPickUp();

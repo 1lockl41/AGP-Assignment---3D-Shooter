@@ -6,11 +6,15 @@
 #include <stdio.h>
 #include "baseClass.h"
 
+
+//Health pickup object, when the player collides with this object, will restore a set amount of health
 class pickupHealth : public baseClass
 {
 private:
 
 	int m_spawnX, m_spawnY, m_spawnZ;
+
+	//How long between respawns
 	float spawnTimer;
 	float spawnTimerReset;
 
@@ -27,17 +31,16 @@ public:
 		m_spawnY = spawnY;
 		m_spawnZ = spawnZ;
 
-		spawnTimerReset = 1000;
+		spawnTimerReset = 2000;
 		spawnTimer = spawnTimerReset;
 
 		m_active = false;
-
 	}
 
-	void Spawn();
-	void OnPickUp();
-	bool IsActive();
-	void Update();
+	void Spawn(); //Place on level
+	void OnPickUp(); //Once picked up by player
+	bool IsActive(); //Check if active
+	void Update(); //Update spawn timer
 
 
 };

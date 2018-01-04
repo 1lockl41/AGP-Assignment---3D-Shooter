@@ -9,12 +9,14 @@
 baseClass::baseClass(bool isSkybox, int xPos, int yPos, int zPos, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
 {
 
-	m_model = new Model(pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
-	m_model->SetIsSkybox(isSkybox);
-	m_model->LoadObjModel(modelFilename);
+	m_model = new Model(pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox); //set model
+	m_model->SetIsSkybox(isSkybox); //sets if this model is a skybox or not, inverts culling
+	m_model->LoadObjModel(modelFilename); //Load model
 
+	//Set the scene node which this object belongs to
 	m_sceneNode = new Scene_node();
 
+	//Initialise sampler
 	D3D11_SAMPLER_DESC sampler_desc;
 	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
 	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -24,17 +26,20 @@ baseClass::baseClass(bool isSkybox, int xPos, int yPos, int zPos, char* modelFil
 	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 	pD3DDevice->CreateSamplerState(&sampler_desc, &m_pSampler);
 
+	//Create texture
 	D3DX11CreateShaderResourceViewFromFile(pD3DDevice, textureFilename, NULL, NULL, &m_pTexture, NULL);
 	
-
+	//Set object's texture and sampler
 	m_model->SetTexture(m_pTexture);
 	m_model->SetSampler(m_pSampler);
 
+	//Set position
 	setXPos(xPos);
 	setYPos(yPos);
 	setZPos(zPos);
 }
 
+//Return object's model
 Model* baseClass::getModel()
 {
 	return m_model;
@@ -83,9 +88,12 @@ Scene_node* baseClass::getSceneNode()
 	return m_sceneNode;
 }
 
+//Set the models Y angle to face a position
 void baseClass::LookAt_XZ(float xPos, float zPos)
 {
-	m_yAngle = atan2((xPos - m_xPos), (zPos - m_zPos))  * (180 / XM_PI);
-	m_sceneNode->SetYangle(m_yAngle);
+	m_yAngle = atan2((xPos - m_xPos), (zPos - m_zPos))  * (180 / XM_PI); //calculate new angle
+
+	//set new Y angle
+	m_sceneNode->SetYangle(m_yAngle); 
 	m_model->SetYangle(m_yAngle);
 }

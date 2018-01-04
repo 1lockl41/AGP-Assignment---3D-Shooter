@@ -32,9 +32,10 @@ level::level(bool isSkybox, int levelSizeX, int levelSizeZ, Scene_node* root_nod
 	SetupLevelWalls(isSkybox, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox);
 }
 
-
+//Set up the positions and layout of level. 
 void level::InitialiseLevelWalls()
 {
+	////Automatically set outisde walls based on size of level/////
 	for (int i = 0; i < m_levelSizeX; i++)
 	{
 		for (int j = m_levelSizeZ - 1; j < m_levelSizeZ; j++)
@@ -66,8 +67,9 @@ void level::InitialiseLevelWalls()
 			m_levelWallsVector2D[i][j] = 1;
 		}
 	}
+	//////////////////////////////////////////////////////////////
 
-
+	//Specically set positions of walls
 	m_levelWallsVector2D[6][6] = 1;
 	m_levelWallsVector2D[6][7] = 1;
 	m_levelWallsVector2D[6][8] = 1;
@@ -83,9 +85,10 @@ void level::InitialiseLevelWalls()
 	m_levelWallsVector2D[10][6] = 2;
 }
 
+//Create walls blocks based on level data.
 void level::SetupLevelWalls(bool isSkybox, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
 {
-
+	//Loop through walls vector, placing the specified walls at their correct position
 	for (int i = 0; i < m_levelSizeX; i++)
 	{
 		for (int j = 0; j < m_levelSizeZ; j++)

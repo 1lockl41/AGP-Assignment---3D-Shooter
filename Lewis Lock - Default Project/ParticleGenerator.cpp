@@ -10,25 +10,29 @@
 
 ParticleGenerator::ParticleGenerator(int numberOfParticles, Scene_node* root_node, char* modelFilename, char* textureFilename, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, ID3D11RasterizerState* pRasterSolid, ID3D11RasterizerState* pRasterSkybox, ID3D11DepthStencilState* pDepthWriteSolid, ID3D11DepthStencilState* pDepthWrtieSkybox)
 {
+	//Set random seed
 	srand(static_cast <unsigned> (time(0)));
 
+	//Initialise particles to object pool
 	for (int i = 0; i < numberOfParticles; i++)
 	{
 		particles.push_back(new Particle(false, -100, -100, root_node, modelFilename, textureFilename, pD3DDevice, pImmediateContext, pRasterSolid, pRasterSkybox, pDepthWriteSolid, pDepthWrtieSkybox));
-
 	}
 }
 
 void ParticleGenerator::SpawnParticles()
 {
+	//Spawn any inactive particles
 	for (int i = 0; i < particles.size(); i++)
 	{
 		if (!particles[i]->isActive())
 		{
+			//The min and max values of potential positions to move in direction to
 			float minRandom = -100;
 			float maxRandom = 100;
 
-			float x_lookAt = minRandom + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(maxRandom - minRandom)));
+			//Set direction of movement to a random position 
+			float x_lookAt = minRandom + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxRandom - minRandom)));
 			float y_lookAt = minRandom + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxRandom - minRandom)));
 			float z_lookAt = minRandom + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxRandom - minRandom)));
 
@@ -47,7 +51,6 @@ void ParticleGenerator::UpdateParticles(double deltaTime)
 	{
 		if (particles[i]->isActive())
 		{
-
 			particles[i]->Move(deltaTime);
 		}
 

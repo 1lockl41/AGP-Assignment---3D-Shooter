@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include "baseClass.h"
 
+//Wall object class. These blocks act as walls throughout the level, preventing actors from moving through them.
+//The level uses two types, normal walls and removable walls. Removable walls are deactivated once triggered to allow movement.
 class wall : public baseClass
 {
 private:
@@ -28,6 +30,6 @@ public:
 
 	};
 
-	void SetActive(bool active);
-	void Update();
+	void SetActive(bool active); //Set wall to active or inactive. Used to deactivate removable walls.
+	void Update(); //Check whether wall is active or inactive. Used to deactivate removable walls.
 };
